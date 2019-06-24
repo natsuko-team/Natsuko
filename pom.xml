@@ -23,6 +23,11 @@
     <artifactId>discord4j-core</artifactId>
     <version>3.0.7</version>
   </dependency>
+  <dependency>
+    <groupId>org.reflections</groupId>
+    <artifactId>reflections</artifactId>
+    <version>0.9.11</version>
+</dependency>
   <!-- https://mvnrepository.com/artifact/org.ini4j/ini4j -->
 <dependency>
     <groupId>org.ini4j</groupId>
