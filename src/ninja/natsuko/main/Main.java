@@ -5,19 +5,25 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.lang.management.ManagementFactory;
 
 import org.ini4j.Wini;
 import org.reflections.Reflections;
+
+import ninja.natsuko.main.Utilities;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import ninja.natsuko.main.command.Command;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.util.Snowflake;
 
 public class Main {
 	private static Map<String, Command> commands = new HashMap<>();
 	
+	static String inst = "null";
 	public static void main(String[] args) {
 		Reflections reflections = new Reflections("ninja.natsuko.main.command"); // restrict to command package to prevent unnecessary searching
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
@@ -31,12 +37,14 @@ public class Main {
 			}
 		});
 		
+		inst = Double.toString(Math.random());
 		try {
 			Wini config = new Wini(new File("./config.ini"));
 			DiscordClientBuilder builder = new DiscordClientBuilder(config.get("Config", "token"));
 			DiscordClient client = builder.build();	
 			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> {
-				//readyevent do things later
+				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
+				return;
 			});	
 			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {processCommand(event);});	
 			client.login().block();
@@ -65,8 +73,7 @@ public class Main {
 		String cmd = vomit[0];
 		String[] args = Arrays.stream(vomit).skip(1).toArray(String[]::new);
 
-		if (commands.get(cmd) != null) {
+		if (commands.get(cmd) != null) 
 			commands.get(cmd).execute(args, event);
-		}
 	}
 }
