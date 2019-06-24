@@ -1,4 +1,4 @@
-package ninja.natsuko.main;
+package ninja.natsuko.bot.util;
 
 import java.io.IOException;
 

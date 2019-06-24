@@ -1,11 +1,9 @@
-package ninja.natsuko.commands;
+package ninja.natsuko.bot.commands;
 
 //import java.lang.management.ManagementFactory;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-//import discord4j.core.object.entity.Guild;
-//import discord4j.core.object.util.Snowflake;
-import ninja.natsuko.main.Utilities;
+import ninja.natsuko.bot.util.Utilities;
 
 public class ServerCommand extends Command {
 

@@ -30,7 +30,7 @@
               </descriptorRefs>
               <archive>
               	<manifest>
-              		<mainClass>ninja.natsuko.main.Main</mainClass>
+              		<mainClass>ninja.natsuko.bot.Main</mainClass>
               	</manifest>
               </archive>
             </configuration>

@@ -1,4 +1,4 @@
-package ninja.natsuko.main;
+package ninja.natsuko.bot;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,7 +17,8 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
-import ninja.natsuko.commands.Command;
+import ninja.natsuko.bot.commands.Command;
+import ninja.natsuko.bot.util.Database;
 
 public class Main {
 	public static Map<String, Command> commands = new HashMap<>();
@@ -25,7 +26,7 @@ public class Main {
 	
 	static String inst = "null";
 	public static void main(String[] args) {
-		Reflections reflections = new Reflections("ninja.natsuko.commands"); // restrict to command package to prevent unnecessary searching
+		Reflections reflections = new Reflections("ninja.natsuko.bot.commands"); // restrict to command package to prevent unnecessary searching
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
 		commandClasses.forEach((cmd) -> {
 			try {
