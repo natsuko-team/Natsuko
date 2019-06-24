@@ -13,16 +13,16 @@ import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import ninja.natsuko.main.command.Command;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
+import ninja.natsuko.commands.Command;
 
 public class Main {
 	private static Map<String, Command> commands = new HashMap<>();
 	
 	static String inst = "null";
 	public static void main(String[] args) {
-		Reflections reflections = new Reflections("ninja.natsuko.main.command"); // restrict to command package to prevent unnecessary searching
+		Reflections reflections = new Reflections("ninja.natsuko.commands"); // restrict to command package to prevent unnecessary searching
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
 		commandClasses.forEach((cmd) -> {
 			try {

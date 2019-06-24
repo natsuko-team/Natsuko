@@ -1,4 +1,4 @@
-package ninja.natsuko.main.command;
+package ninja.natsuko.commands;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 
