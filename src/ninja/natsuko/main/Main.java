@@ -18,12 +18,27 @@ public class Main {
 			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> {
 				//readyevent do things later
 			});	
-			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {
-				//TODO your block lewis
-			});	
+			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {processCommand(event);});	
 			client.login().block();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static void processCommand(MessageCreateEvent event) {
+		String msg;
+		if(event.getMessage().getContent().isPresent()) {
+			msg = event.getMessage().getContent().get();
+		} else {
+			return;
+		}
+		String cmd = msg.split("n;")[1].split(" ")[0];
+		if(cmd.equalsIgnoreCase("invite")) {
+			event.getMessage().getChannel().block().createMessage("Invite me with https://discordapp.com/oauth2/authorize?client_id="+event.getClient().getSelfId().get().asString()+"&scope=bot !").subscribe();
+			return;
+		}
+		if(cmd.equalsIgnoreCase("about")) {
+			//about stuff
 		}
 	}
 }
