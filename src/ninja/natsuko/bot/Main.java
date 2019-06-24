@@ -23,6 +23,7 @@ import ninja.natsuko.bot.util.Database;
 public class Main {
 	public static Map<String, Command> commands = new HashMap<>();
 	public static Database DATABASE;
+	public static DiscordClient client;
 	
 	static String inst = "null";
 	public static void main(String[] args) {
@@ -44,7 +45,7 @@ public class Main {
 			DATABASE = new Database(new MongoClientURI(config.get("Mongo", "uri")), config.get("Mongo", "database"));
 			
 			DiscordClientBuilder builder = new DiscordClientBuilder(config.get("Config", "token"));
-			DiscordClient client = builder.build();	
+			client = builder.build();	
 			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> {
 				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
 				return;
