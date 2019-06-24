@@ -17,7 +17,7 @@ public class HelpCommand extends Command {
 			return;
 		}
 		StringBuilder b = new StringBuilder("Commands:\n```\n");
-		for(String i : Main.commands.keySet()) {
+		for(Command i : Main.commands.values()) {
 			b.append(i+", ");
 		}
 		b = b.replace(b.length()-2, b.length(), "");

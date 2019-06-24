@@ -11,5 +11,10 @@ public abstract class Command {
 		this.description = description;
 	}
 	
+	@Override
+	public String toString() {
+		return this.commandName;
+	}
+	
 	public abstract void execute(String[] args, MessageCreateEvent e);
 }
