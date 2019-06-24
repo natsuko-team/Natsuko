@@ -17,7 +17,7 @@ public class PingCommand extends Command {
 		Instant before = Instant.now();
 		Message msg = e.getMessage().getChannel().block().createMessage("Heartbeat: "+heartbeat+"ms").block();
 		long roundtrip = Instant.now().toEpochMilli()-before.toEpochMilli();
-		msg.edit(spec->{spec.setContent("Heartbeat: "+heartbeat+"ms\nRound-Trip: "+roundtrip+"ms");});
+		msg.edit(spec->{spec.setContent("Heartbeat: "+heartbeat+"ms\nRound-Trip: "+roundtrip+"ms");}).subscribe();
 		return;
 	}
 
