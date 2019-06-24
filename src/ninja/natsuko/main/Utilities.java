@@ -32,9 +32,19 @@ public class Utilities {
 		return chan.createMessage(spec).block();
 	}
 	
+	//returns message but blocks AND string
+	public static Message sendMessageBlocking(MessageChannel chan, String content) {
+		return chan.createMessage(content).block();
+	}
+	
 	// ignores message but async
 	public static void sendMessage(MessageChannel chan, Consumer<? super MessageCreateSpec> spec) {
 		chan.createMessage(spec).subscribe();
+	}
+	
+	//ignores message but async AND string
+	public static void sendMessage(MessageChannel chan, String content) {
+		chan.createMessage(content).subscribe();
 	}
 	
 	// reply helpers \\
@@ -43,10 +53,20 @@ public class Utilities {
 	public static Message replyBlocking(Message m, Consumer<? super MessageCreateSpec> spec) {
 		return m.getChannel().block().createMessage(spec).block();
 	}
+
+	// returns message but blocks and string
+	public static Message replyBlocking(Message m, String content) {
+		return m.getChannel().block().createMessage(content).block();
+	}
 	
 	// ignores message but async
 	public static void reply(Message m, Consumer<? super MessageCreateSpec> spec) {
 		m.getChannel().block().createMessage(spec).subscribe();
+	}
+	
+	// ignores message but async and string
+	public static void reply(Message m, String content) {
+		m.getChannel().block().createMessage(content).subscribe();
 	}
 	
 	// extras \\
