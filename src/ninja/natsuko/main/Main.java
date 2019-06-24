@@ -1,7 +1,6 @@
 package ninja.natsuko.main;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

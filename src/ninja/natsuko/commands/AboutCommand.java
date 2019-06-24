@@ -21,6 +21,7 @@ public class AboutCommand extends Command {
 				espec.addField("Memory", Long.toString((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000/1000)+"MB", true);
 			});
 		}).subscribe();
+		return;
 	}
 	
 }
