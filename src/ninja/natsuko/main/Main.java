@@ -48,7 +48,7 @@ public class Main {
 				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
 				return;
 			});	
-			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {processCommand(event);});	
+			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Main::processCommand);
 			client.login().block();
 		} catch (IOException e) {
 			e.printStackTrace();
