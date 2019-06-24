@@ -20,7 +20,7 @@ import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.commands.Command;
 
 public class Main {
-	private static Map<String, Command> commands = new HashMap<>();
+	public static Map<String, Command> commands = new HashMap<>();
 	public static Database DATABASE;
 	
 	static String inst = "null";

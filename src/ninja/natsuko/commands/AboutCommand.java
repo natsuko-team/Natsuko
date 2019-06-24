@@ -13,14 +13,14 @@ public class AboutCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		e.getMessage().getChannel().block().createMessage(spec->{
-			spec.setEmbed(espec->{
-				espec.setAuthor("Natsuko", "https://natsuko.ninja", "https://natsuko.ninja");
-				espec.addField("Servers", e.getClient().getGuilds().count().block().toString(), true);
-				espec.addField("Uptime", Utilities.longMilisToTime(ManagementFactory.getRuntimeMXBean().getUptime()), true);
-				espec.addField("Memory", Long.toString((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000/1000)+"MB", true);
+		Utilities.reply(e.getMessage(), spec -> {
+			spec.setEmbed(embed -> {
+				embed.setAuthor("Natsuko", "https://natsuko.ninja", "https://natsuko.ninja");
+				embed.addField("Servers", e.getClient().getGuilds().count().block().toString(), true);
+				embed.addField("Uptime", Utilities.longMilisToTime(ManagementFactory.getRuntimeMXBean().getUptime()), true);
+				embed.addField("Memory", Long.toString((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000/1000)+"MB", true);
 			});
-		}).subscribe();
+		});
 	}
 	
 }
