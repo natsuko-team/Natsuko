@@ -5,7 +5,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 public class InviteCommand extends Command {
 
 	public InviteCommand() {
-		super("invite","Display the bot's invite link.");
+		super("invite","Display the bot's invite link. Usage: n;invite");
 	}
 
 	@Override

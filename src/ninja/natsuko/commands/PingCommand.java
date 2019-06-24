@@ -8,7 +8,7 @@ import discord4j.core.object.entity.Message;
 public class PingCommand extends Command {
 
 	public PingCommand() {
-		super("ping", "Test the bot's aliveness.");
+		super("ping", "Test the bot's aliveness. Usage: n;ping");
 	}
 
 	@Override

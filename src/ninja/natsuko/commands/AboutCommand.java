@@ -8,7 +8,7 @@ import ninja.natsuko.main.Utilities;
 public class AboutCommand extends Command {
 
 	public AboutCommand() {
-		super("about", "Displays information about the bot.");
+		super("about", "Displays information about the bot. Usage: n;about");
 	}
 
 	@Override
