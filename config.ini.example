@@ -1,2 +1,6 @@
 [Config]
 token = no.token4.you
+
+[Mongo]
+uri = mongodb://localhost:27017
+database = natsuko
