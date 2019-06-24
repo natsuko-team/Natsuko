@@ -1,7 +1,8 @@
-package ninja.natsuko.commands;
+package ninja.natsuko.bot.commands;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 
+@Invisible
 public class TestCommand extends Command {
 
 	public TestCommand() {

@@ -1,4 +1,4 @@
-package ninja.natsuko.commands;
+package ninja.natsuko.bot.commands;
 
 import java.time.Instant;
 

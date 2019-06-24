@@ -1,9 +1,9 @@
-package ninja.natsuko.commands;
+package ninja.natsuko.bot.commands;
 
 import java.lang.management.ManagementFactory;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import ninja.natsuko.main.Utilities;
+import ninja.natsuko.bot.util.Utilities;
 
 public class AboutCommand extends Command {
 
