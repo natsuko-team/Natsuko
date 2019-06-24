@@ -29,7 +29,6 @@ public class Main {
 				Command cmdClass = cmd.newInstance();
 				commands.put(cmdClass.commandName, cmdClass);
 			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -68,6 +67,11 @@ public class Main {
 		}
 		
 		String cmd = vomit[0];
+		
+		if(cmd.equalsIgnoreCase("kill") && event.getMember().get().getId().asLong() == event.getClient().getSelfId().get().asLong()) {
+			if(!msg.contains(inst))System.exit(0);
+		}
+		
 		String[] args = Arrays.stream(vomit).skip(1).toArray(String[]::new);
 
 		if (commands.get(cmd) != null) 
