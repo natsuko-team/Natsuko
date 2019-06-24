@@ -1,6 +1,7 @@
 package ninja.natsuko.main;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.Set;
 
 import org.ini4j.Wini;
 import org.reflections.Reflections;
+
+import com.mongodb.MongoClientURI;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -19,6 +22,7 @@ import ninja.natsuko.commands.Command;
 
 public class Main {
 	private static Map<String, Command> commands = new HashMap<>();
+	public static Database DATABASE;
 	
 	static String inst = "null";
 	public static void main(String[] args) {
@@ -36,6 +40,9 @@ public class Main {
 		inst = Double.toString(Math.random());
 		try {
 			Wini config = new Wini(new File("./config.ini"));
+			
+			DATABASE = new Database(new MongoClientURI(config.get("Mongo", "uri")), config.get("Mongo", "database"));
+			
 			DiscordClientBuilder builder = new DiscordClientBuilder(config.get("Config", "token"));
 			DiscordClient client = builder.build();	
 			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> {
