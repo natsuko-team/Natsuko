@@ -63,10 +63,13 @@ public class Main {
 			return;
 		}
 		
+		// commands area
+		if (!msg.startsWith("n;")) return;
+		
 		String[] vomit;
 
 		try {
-			vomit = msg.split("n;")[1].split(" ");
+			vomit = msg.substring(2).split(" ");
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// ignore and skip
 			return;
