@@ -1,7 +1,6 @@
 package ninja.natsuko.main;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class Main {
 				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
 				return;
 			});	
-			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {processCommand(event);});	
+			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Main::processCommand);
 			client.login().block();
 		} catch (IOException e) {
 			e.printStackTrace();
