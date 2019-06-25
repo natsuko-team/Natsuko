@@ -9,7 +9,8 @@ import java.util.Set;
 import org.ini4j.Wini;
 import org.reflections.Reflections;
 
-import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -18,11 +19,10 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.commands.Command;
-import ninja.natsuko.bot.util.Database;
 
 public class Main {
 	public static Map<String, Command> commands = new HashMap<>();
-	public static Database DATABASE;
+	public static MongoDatabase db;
 	public static DiscordClient client;
 	
 	static String inst = "null";
@@ -42,7 +42,7 @@ public class Main {
 		try {
 			Wini config = new Wini(new File("./config.ini"));
 			
-			DATABASE = new Database(new MongoClientURI(config.get("Mongo", "uri")), config.get("Mongo", "database"));
+			db = MongoClients.create(config.get("Mongo", "uri")).getDatabase(config.get("Mongo", "database"));
 			
 			DiscordClientBuilder builder = new DiscordClientBuilder(config.get("Config", "token"));
 			client = builder.build();	
