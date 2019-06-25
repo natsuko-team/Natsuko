@@ -1,7 +1,5 @@
 package ninja.natsuko.bot.commands;
 
-//import java.lang.management.ManagementFactory;
-
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -16,8 +14,11 @@ public class ServerCommand extends Command {
 		Utilities.reply(e.getMessage(), spec -> {
 			spec.setEmbed(embed -> {
 				embed.setAuthor("Natsuko", "https://natsuko.ninja", "https://natsuko.ninja");
-				//embed.addField("Owner", e.getGuild().block().getMemberById(Snowflake.of(e.getClient().getSelfId().get().asLong())).block().getJoinTime());
+				embed.addField("Owner", e.getGuild().block().getOwner().toString(), true);
+				embed.addField("Name", e.getGuild().block().getName().toString(), true);
 				embed.addField("Members", e.getGuild().block().getMembers().count().block().toString(), true);
+				embed.addField("Date Added", e.getGuild().block().getJoinTime().toString(), true);
+				embed.setColor(Utilities.embedColor);
 			});
 		});
 		return;

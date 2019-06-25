@@ -1,6 +1,7 @@
 package ninja.natsuko.bot.util;
 
 import java.util.Arrays;
+import java.awt.Color;
 import java.util.function.Consumer;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -30,6 +31,9 @@ public class Utilities {
 
         return days+(days == 1 ? " Day, " : " Days, ")+strhours+":"+strminutes+":"+strseconds;
     }
+	
+	 public static Color embedColor = new Color(252, 113, 20);
+	
 	
 	// message helpers \\
 	
