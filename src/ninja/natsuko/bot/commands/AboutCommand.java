@@ -17,6 +17,7 @@ public class AboutCommand extends Command {
 			spec.setEmbed(embed -> {
 				embed.setAuthor("Natsuko", "https://natsuko.ninja", "https://natsuko.ninja");
 				embed.addField("Servers", e.getClient().getGuilds().count().block().toString(), true);
+				embed.addField("Members", e.getClient().getUsers().count().block().toString(), true);
 				embed.addField("Uptime", Utilities.longMilisToTime(ManagementFactory.getRuntimeMXBean().getUptime()), true);
 				embed.addField("Memory", Long.toString((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000/1000)+"MB", true);
 				embed.setColor(Utilities.embedColor);
