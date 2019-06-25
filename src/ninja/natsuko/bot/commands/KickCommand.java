@@ -5,12 +5,22 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 public class KickCommand extends Command {
 
 	public KickCommand() {
-		super("test", "Testing the dynamic loader");
+		super("kick", "Kick a user from the server");
 	}
 
+	
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		e.getMessage().getChannel().block().createMessage("THE DYNAMIC LOADER WORKED HOLY SHIT").subscribe();
-	}
+		
+		//To do
+		
+		//if (Guild.getId.getName.hasPermission(Permission.KICK_MEMBERS)) {
+				return;
+			
+			
+			
+			
 
+		}//return;
+	
 }
