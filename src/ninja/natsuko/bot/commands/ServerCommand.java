@@ -18,6 +18,7 @@ public class ServerCommand extends Command {
 				embed.addField("Name", e.getGuild().block().getName().toString(), true);
 				embed.addField("Members", e.getGuild().block().getMembers().count().block().toString(), true);
 				embed.addField("Date Added", e.getGuild().block().getMembers().count().block().toString(), true);
+				embed.setColor(Utilities.embedColor);
 			});
 		});
 		return;

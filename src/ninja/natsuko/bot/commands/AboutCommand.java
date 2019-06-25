@@ -19,6 +19,7 @@ public class AboutCommand extends Command {
 				embed.addField("Servers", e.getClient().getGuilds().count().block().toString(), true);
 				embed.addField("Uptime", Utilities.longMilisToTime(ManagementFactory.getRuntimeMXBean().getUptime()), true);
 				embed.addField("Memory", Long.toString((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000/1000)+"MB", true);
+				embed.setColor(Utilities.embedColor);
 			});
 		});
 		return;
