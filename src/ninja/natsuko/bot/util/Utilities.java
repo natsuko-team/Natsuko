@@ -1,7 +1,7 @@
 package ninja.natsuko.bot.util;
 
-import java.util.Arrays;
 import java.awt.Color;
+import java.util.List;
 import java.util.function.Consumer;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -113,6 +113,12 @@ public class Utilities {
 	}
 	
 	public static boolean userIsStaff(User user) {
-		return Arrays.asList(153353572711530496l,251557870603075586l,96269247411400704l,190544080164487168l,254422934045589505l).contains(user.getId().asLong());
+		List<Member> members = Main.client.getGuildById(Snowflake.of(591720852891107328L)).block() // natsuko bot guild
+				.getMembers().collectList().block(); // get members
+
+		members.removeIf(m -> !m.getRoles().any(r -> r.getId() == Snowflake.of(593506464816168992L)).block()); // filter out people without staff role
+		members.removeIf(m -> !(m.getId() == user.getId())); // filter out every other user than the user we're looking for
+		
+		return members.size() == 1;
 	}
 }
