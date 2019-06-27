@@ -6,12 +6,12 @@ import ninja.natsuko.bot.util.Utilities;
 
 public class SafeUtils {
 
-	private static TextChannel unsafe(SafeChannel channel) {
+	private static TextChannel unsafeChan(SafeChannel channel) {
 		return (TextChannel) Main.client.getChannelById(channel.getId()).block();
 	}
 	
 	public static SafeMessage send(SafeChannel channel, String string) {
-		return new SafeMessage(Utilities.sendMessageBlocking(unsafe(channel), string));
+		return new SafeMessage(Utilities.sendMessageBlocking(unsafeChan(channel), string));
 	}
 	
 }
