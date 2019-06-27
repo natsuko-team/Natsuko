@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.util.Permission;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -47,12 +48,16 @@ public class KickCommand extends Command {
 			if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
 				Utilities.reply(e.getMessage(), "That user is above the bot!");
 			}
+			if(!e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS)) {
+				Utilities.reply(e.getMessage(), "I don't have permissions to kick!");
+			}
 			target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
 			//TODO properly modlog it @lewistehminerz
 			if(actualArgs.get(1).matches("-s|--silent")) {
 				Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
 			}
 		}
+		Utilities.reply(e.getMessage(), "You dont have permissions to kick!");
 		return;
 	}
 	
