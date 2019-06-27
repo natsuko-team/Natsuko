@@ -22,6 +22,12 @@ public class KickCommand extends Command {
 		if(Utilities.userIsModerator(e.getMember().get())) {
 			if(Utilities.isNumbers(actualArgs.get(0).replaceAll("[<@!>]", ""))) {
 				Member target = ArgumentParser.toMemberByID(actualArgs.get(0).replaceAll("[<!@>]", ""), e.getGuild().block());
+				if(target.isHigher(e.getMember().get()).block()) {
+					Utilities.reply(e.getMessage(), "That user is above you!");
+				}
+				if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+					Utilities.reply(e.getMessage(), "That user is above the bot!");
+				}
 				target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
 				//TODO properly modlog it @lewistehminerz
 				if(actualArgs.get(1).matches("-s|--silent")) {
@@ -35,6 +41,12 @@ public class KickCommand extends Command {
 				return;
 			}
 			Member target = partialresult.get(0);
+			if(target.isHigher(e.getMember().get()).block()) {
+				Utilities.reply(e.getMessage(), "That user is above you!");
+			}
+			if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+				Utilities.reply(e.getMessage(), "That user is above the bot!");
+			}
 			target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
 			//TODO properly modlog it @lewistehminerz
 			if(actualArgs.get(1).matches("-s|--silent")) {
