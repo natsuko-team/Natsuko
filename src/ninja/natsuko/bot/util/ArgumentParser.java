@@ -39,8 +39,8 @@ public class ArgumentParser {
 	public static List<Member> toMemberByPartial(String partial,Guild guild) {
 		return guild.getMembers().filter(m->{return ((m.getUsername()+"#"+m.getDiscriminator()).contains(partial));}).collect(Collectors.toList()).block();
 	}
-	public static Member toMemberByID(String user, String guild) {
-		return toGuild(guild).getMemberById(Snowflake.of(user)).block();
+	public static Member toMemberByID(String user, Guild guild) {
+		return guild.getMemberById(Snowflake.of(user)).block();
 	}
 	public static Guild toGuild(String guild) {
 		return Main.client.getGuildById(Snowflake.of(guild)).block();
