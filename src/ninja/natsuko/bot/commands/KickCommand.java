@@ -1,6 +1,12 @@
 package ninja.natsuko.bot.commands;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Member;
+import ninja.natsuko.bot.util.ArgumentParser;
+import ninja.natsuko.bot.util.Utilities;
 
 public class KickCommand extends Command {
 
@@ -11,16 +17,31 @@ public class KickCommand extends Command {
 	
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		
-		//To do
-		
-		//if (Guild.getId.getName.hasPermission(Permission.KICK_MEMBERS)) {
+		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(!e.getMember().isPresent()) return;
+		if(Utilities.userIsModerator(e.getMember().get())) {
+			if(Utilities.isNumbers(actualArgs.get(0).replaceAll("[<@!>]", ""))) {
+				Member target = ArgumentParser.toMemberByID(actualArgs.get(0).replaceAll("[<!@>]", ""), e.getGuild().block());
+				target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
+				//TODO properly modlog it @lewistehminerz
+				if(actualArgs.get(1).matches("-s|--silent")) {
+					Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
+				}
+			}
+			List<Member> partialresult = ArgumentParser.toMemberByPartial(actualArgs.get(0), e.getGuild().block());	
+			if(partialresult.size() > 1) {
+				Utilities.reply(e.getMessage(), "There are more than one member that match that input!\n```\n"+
+						String.join("\n", partialresult.stream().map(a->{return a.getUsername()+"#"+a.getDiscriminator();}).collect(Collectors.toList()))+"\n```");
 				return;
-			
-			
-			
-			
-
-		}//return;
+			}
+			Member target = partialresult.get(0);
+			target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
+			//TODO properly modlog it @lewistehminerz
+			if(actualArgs.get(1).matches("-s|--silent")) {
+				Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
+			}
+		}
+		return;
+	}
 	
 }
