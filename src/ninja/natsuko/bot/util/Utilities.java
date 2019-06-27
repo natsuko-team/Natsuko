@@ -4,7 +4,11 @@ import java.awt.Color;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
@@ -120,5 +124,13 @@ public class Utilities {
 		members.removeIf(m -> !(m.getId() == user.getId())); // filter out every other user than the user we're looking for
 		
 		return members.size() == 1;
+	}
+
+	public static Document guildToFindDoc(Guild guild) {
+		return Document.parse("{\"_id\":"+guild.getId().asString()+"}");
+	}
+	
+	public static boolean isNumbers(String string) {
+		return string.matches("^\\d*$");
 	}
 }
