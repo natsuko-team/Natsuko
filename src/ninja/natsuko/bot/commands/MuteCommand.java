@@ -53,6 +53,7 @@ public class MuteCommand extends Command {
 				}
 				if(i.matches("^(?:-t|--temp)=(\\d+)(s|m|h|d|w)$")) {
 					Matcher m = Pattern.compile("^(?:-t|--temp)=(\\d+)(m|h|d|w)$",Pattern.CASE_INSENSITIVE).matcher(i);
+					if(!m.find())continue;
 					long time = Long.parseLong(m.group(1));
 					String unit = m.group(2).toLowerCase();
 					switch(unit) {
