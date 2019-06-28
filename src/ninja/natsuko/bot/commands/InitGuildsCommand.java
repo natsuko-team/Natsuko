@@ -18,7 +18,9 @@ public class InitGuildsCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		if(!Utilities.userIsStaff(e.getMember().get())) return;
+		if(!Utilities.userIsStaff(e.getMember().get())) {
+			Utilities.reply(e.getMessage(), "You arent staff. GTFO.");
+		}
 		int counter = 0;
 		for(Guild i : e.getClient().getGuilds().collect(Collectors.toList()).block()) {
 			Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(i)).first();
