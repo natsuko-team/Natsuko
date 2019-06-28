@@ -33,11 +33,12 @@ public class ScriptCommand extends Command {
 			}
 			StringBuilder output = new StringBuilder("Script Slots:```");
 			for(int i = 0; i < scripts.size();i++) {
-				output.append((i+1)+": Used");
+				output.append((i+1)+": Used\n");
 			}
 			for(int i = scripts.size(); i < 6;i++) {
 				output.append(i>3?(i+1)+": *RESERVED*":(i+1)+": Free");
 			}
+			output.append("```");
 			Utilities.reply(e.getMessage(), output.toString());
 			break;
 		case "add":
