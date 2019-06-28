@@ -12,7 +12,10 @@ public class ExitCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		if(!Utilities.userIsStaff(e.getMember().get()))
+		if(!Utilities.userIsStaff(e.getMember().get())) {
+			Utilities.reply(e.getMessage(), "You arent staff. GTFO.");
+			return;
+		}
 		System.exit(0);
 	}
 

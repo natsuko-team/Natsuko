@@ -20,6 +20,7 @@ public class InitGuildsCommand extends Command {
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsStaff(e.getMember().get())) {
 			Utilities.reply(e.getMessage(), "You arent staff. GTFO.");
+			return;
 		}
 		int counter = 0;
 		for(Guild i : e.getClient().getGuilds().collect(Collectors.toList()).block()) {
