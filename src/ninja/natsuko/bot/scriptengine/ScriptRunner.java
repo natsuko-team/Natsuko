@@ -23,6 +23,8 @@ public class ScriptRunner {
 
 	NashornSandbox sandbox = NashornSandboxes.create();
 	
+	boolean scriptsErrored = false;
+	
 	Guild guild;
 	
 	public ScriptRunner(Guild guild) {
@@ -38,15 +40,18 @@ public class ScriptRunner {
 	}
 	
 	public void run(Message message) {
+		if(this.scriptsErrored) return;
 		this.sandbox.inject("message", message);
 		for(String i : this.loadedScripts) {
 			try {
 				this.sandbox.eval(i);
 			} catch (ScriptCPUAbuseException e) {
 				Utilities.reply(message, "ERROR: A script exceeded the Memory or Time limit.\nPlease check your scripts for memory leaks or infinite loops.");
+				this.scriptsErrored = true;
 				return;
 			} catch (ScriptException e) {
 				Utilities.reply(message, "ERROR: A script threw an error:\n"+e.getMessage());
+				this.scriptsErrored = true;
 				return;
 			}
 		}
