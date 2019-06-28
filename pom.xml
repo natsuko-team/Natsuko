@@ -46,6 +46,16 @@
         <artifactId>mongodb-driver-sync</artifactId>
         <version>3.8.1</version>
     </dependency>
+    <dependency>
+	  <groupId>ch.qos.logback</groupId>
+	  <artifactId>logback-classic</artifactId>
+	  <version>1.0.13</version>
+	</dependency>
+    <dependency>
+  <groupId>org.javadelight</groupId>
+  <artifactId>delight-nashorn-sandbox</artifactId>
+  <version>0.1.26</version>
+</dependency>
   <dependency>
     <groupId>com.discord4j</groupId>
     <artifactId>discord4j-core</artifactId>
