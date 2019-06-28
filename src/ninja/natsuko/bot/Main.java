@@ -57,7 +57,7 @@ public class Main {
 						try {
 							switch(i.getString("type")) {
 							case "unban":
-								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+i.getLong("due")+"ms");
+								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+i.getLong("due")+"ms").subscribe();
 								db.getCollection("timed").deleteOne(i);
 								break;
 							case "unmute":
@@ -65,7 +65,7 @@ public class Main {
 								if(!opts.containsKey("mutedrole")) {root.info("Mutedrole didnt exist upon auto-unmute"); return;} //wtf?
 								roleId = Long.parseLong(opts.get("mutedrole").toString());
 								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().getMemberById(Snowflake.of(i.getString("target"))).block().removeRole(
-										Snowflake.of(roleId), "Natsuko auto-unmute after "+i.getLong("due")+"ms");
+										Snowflake.of(roleId), "Natsuko auto-unmute after "+i.getLong("due")+"ms").subscribe();
 								db.getCollection("timed").deleteOne(i);
 								root.info("Unmuted a user", i);
 								break;
