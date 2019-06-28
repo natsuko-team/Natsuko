@@ -42,7 +42,7 @@ public class ConfigCommand extends Command {
 			case "modrole":
 				if(Utilities.isNumbers(aargs.get(2).replaceAll("[<@&>]", ""))) {
 					long modRole = Long.parseLong(aargs.get(2).replaceAll("[<@&>]", ""));
-					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
+					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) != null) {
 						opts.put("modrole",modRole);
 						guild.put("options", opts);
 						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
@@ -50,12 +50,12 @@ public class ConfigCommand extends Command {
 						return;
 					}
 				}
-				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2).replaceAll("[<@&>]", ""));
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: Role got:"+aargs.get(2).replaceAll("[<@&>]", ""));
 				return;
 			case "adminrole":
 				if(Utilities.isNumbers(aargs.get(2).replaceAll("[<@&>]", ""))) {
 					long modRole = Long.parseLong(aargs.get(2).replaceAll("[<@&>]", ""));
-					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
+					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) != null) {
 						opts.put("adminrole",modRole);
 						guild.put("options", opts);
 						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
@@ -63,12 +63,12 @@ public class ConfigCommand extends Command {
 						return;
 					}
 				}
-				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2).replaceAll("[<@&>]", ""));
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: Role got:"+aargs.get(2).replaceAll("[<@&>]", ""));
 				return;
 			case "mutedrole":
 				if(Utilities.isNumbers(aargs.get(2).replaceAll("[<@&>]", ""))) {
 					long modRole = Long.parseLong(aargs.get(2).replaceAll("[<@&>]", ""));
-					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
+					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) != null) {
 						opts.put("mutedrole",modRole);
 						guild.put("options", opts);
 						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
@@ -76,7 +76,7 @@ public class ConfigCommand extends Command {
 						return;
 					}
 				}
-				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2).replaceAll("[<@&>]", ""));
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: Role got:"+aargs.get(2).replaceAll("[<@&>]", ""));
 				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
