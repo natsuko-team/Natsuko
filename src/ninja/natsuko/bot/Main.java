@@ -67,34 +67,38 @@ public class Main {
 	}
 
 	private static void processCommand(MessageCreateEvent event) {
-		String msg;
-		if (event.getMessage().getContent().isPresent()) {
-			msg = event.getMessage().getContent().get();
-		} else {
-			return;
-		}
-		
-		// commands area
-		if (!msg.startsWith("n;")) return;
-		
-		String[] vomit;
-
 		try {
-			vomit = msg.substring(2).split(" ");
-		} catch (ArrayIndexOutOfBoundsException e) {
-			// ignore and skip
-			return;
-		}
-		
-		String cmd = vomit[0];
-		
-		if(cmd.equalsIgnoreCase("kill") && event.getMember().get().getId().asLong() == event.getClient().getSelfId().get().asLong()) {
-			if(!msg.contains(inst))System.exit(0);
-		}
-		
-		String[] args = Arrays.stream(vomit).skip(1).toArray(String[]::new);
+			String msg;
+			if (event.getMessage().getContent().isPresent()) {
+				msg = event.getMessage().getContent().get();
+			} else {
+				return;
+			}
+			
+			// commands area
+			if (!msg.startsWith("n;")) return;
+			
+			String[] vomit;
 
-		if (commands.get(cmd) != null) 
-			commands.get(cmd).execute(args, event);
+			try {
+				vomit = msg.substring(2).split(" ");
+			} catch (ArrayIndexOutOfBoundsException e) {
+				// ignore and skip
+				return;
+			}
+			
+			String cmd = vomit[0];
+			
+			if(cmd.equalsIgnoreCase("kill") && event.getMember().get().getId().asLong() == event.getClient().getSelfId().get().asLong()) {
+				if(!msg.contains(inst))System.exit(0);
+			}
+			
+			String[] args = Arrays.stream(vomit).skip(1).toArray(String[]::new);
+
+			if (commands.get(cmd) != null) 
+				commands.get(cmd).execute(args, event);
+		} catch(Exception e) {
+			e.printStackTrace(); //TODO log properly kthhnx
+		}
 	}
 }
