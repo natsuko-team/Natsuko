@@ -12,6 +12,8 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
 import ninja.natsuko.bot.Main;
+import ninja.natsuko.bot.moderation.ModLogger;
+import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -91,8 +93,10 @@ public class BanCommand extends Command {
 					target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1));}).subscribe();
 					if(tempTime > 0) {
 						Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
+					} else {
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.BAN, 0, e.getGuild().block()));
 					}
-					//TODO properly modlog it @lewistehminerz
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Banned "+target.getUsername());
 						return;
@@ -127,9 +131,11 @@ public class BanCommand extends Command {
 				int tbandays = bandays;
 				target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1));}).subscribe();			//TODO properly modlog it @lewistehminerz
 				if(tempTime > 0) {
-					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
+					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
+				} else {
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.BAN, 0, e.getGuild().block()));
 				}
-				//TODO modlog
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Banned "+target.getUsername()+"\n");
 					continue;

@@ -1,20 +1,17 @@
 package ninja.natsuko.bot.commands;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import org.bson.Document;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
+import ninja.natsuko.bot.moderation.Case.CaseType;
+import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -63,7 +60,7 @@ public class UnmuteCommand extends Command {
 						return;
 					}
 					target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
-					//TODO properly modlog it @lewistehminerz
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNMUTE, 0, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 						return;
@@ -96,7 +93,7 @@ public class UnmuteCommand extends Command {
 					return;
 				}
 				target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
-				//TODO modlog it properly
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNMUTE, 0, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 					continue;

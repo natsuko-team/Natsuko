@@ -15,6 +15,8 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
+import ninja.natsuko.bot.moderation.ModLogger;
+import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -88,8 +90,10 @@ public class MuteCommand extends Command {
 					target.addRole(Snowflake.of(opts.get("mutedrole").toString()));
 					if(tempTime > 0) {
 						Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.MUTE, 0, e.getGuild().block()));
+					} else {
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.MUTE, 0, e.getGuild().block()));
 					}
-					//TODO properly modlog it @lewistehminerz
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Muted "+target.getUsername());
 						return;
@@ -124,8 +128,10 @@ public class MuteCommand extends Command {
 				target.addRole(Snowflake.of(opts.get("mutedrole").toString()));
 				if(tempTime > 0) {
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.MUTE, 0, e.getGuild().block()));
+				} else {
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.MUTE, 0, e.getGuild().block()));
 				}
-				//TODO modlog it properly
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Muted "+target.getUsername());
 					continue;
