@@ -50,7 +50,7 @@ public class ConfigCommand extends Command {
 						return;
 					}
 				}
-				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2).replaceAll("[<@&>]", ""));
 				return;
 			case "adminrole":
 				if(Utilities.isNumbers(aargs.get(2).replaceAll("[<@&>]", ""))) {
@@ -63,7 +63,7 @@ public class ConfigCommand extends Command {
 						return;
 					}
 				}
-				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2).replaceAll("[<@&>]", ""));
 				return;
 			case "mutedrole":
 				if(Utilities.isNumbers(aargs.get(2).replaceAll("[<@&>]", ""))) {
@@ -76,7 +76,7 @@ public class ConfigCommand extends Command {
 						return;
 					}
 				}
-				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2).replaceAll("[<@&>]", ""));
 				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
