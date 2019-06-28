@@ -21,12 +21,14 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.commands.Command;
+import ninja.natsuko.bot.scriptengine.ScriptRunner;
 import ninja.natsuko.bot.util.Utilities;
 
 public class Main {
 	public static Map<String, Command> commands = new HashMap<>();
 	public static MongoDatabase db;
 	public static DiscordClient client;
+	public static Map<Snowflake,ScriptRunner> modengine = new HashMap<>();
 	
 	static String inst = "null";
 	public static void main(String[] args) {
@@ -75,8 +77,15 @@ public class Main {
 				return;
 			}
 			
+			
 			// commands area
-			if (!msg.startsWith("n;")) return;
+			if (!msg.startsWith("n;")) {
+				if(!modengine.containsKey(event.getGuild().block().getId())) {
+					modengine.put(event.getGuild().block().getId(),new ScriptRunner(event.getGuild().block()));
+				}
+				modengine.get(event.getGuild().block().getId()).run(event.getMessage());
+				return;
+			}
 			
 			String[] vomit;
 
@@ -97,6 +106,13 @@ public class Main {
 
 			if (commands.get(cmd) != null) 
 				commands.get(cmd).execute(args, event);
+			
+			//command execution takes execution precedence over modengine
+			if(!modengine.containsKey(event.getGuild().block().getId())) {
+				modengine.put(event.getGuild().block().getId(),new ScriptRunner(event.getGuild().block()));
+			}
+			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
+			return;
 		} catch(Exception e) {
 			e.printStackTrace(); //TODO log properly kthhnx
 		}
