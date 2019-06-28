@@ -20,7 +20,7 @@ public class ArgumentParser {
 		Matcher baseMatcher = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(string);
 		while (baseMatcher.find()) {
 			String match = baseMatcher.group(1);
-			if(match.matches("^\".+\"$")) match = match.substring(0, match.length()-1);
+			if(match.matches("^\".+\"$")) match = match.substring(1, match.length()-1);
 		    temp.add(match);
 		}
 		return temp;
