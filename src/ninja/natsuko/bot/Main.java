@@ -172,7 +172,7 @@ public class Main {
 			PrintWriter print = new PrintWriter(string);
 			e.printStackTrace(print);
 			String trace = string.toString();
-			event.getMessage().getChannel().block().createMessage(":warning: An error has occurred!\n```"+trace+"```");
+			event.getMessage().getChannel().block().createMessage(":warning: An error has occurred!\n```"+trace+"```").subscribe();
 			e.printStackTrace();
 		}
 	}
