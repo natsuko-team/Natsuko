@@ -9,14 +9,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
+import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Logger;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
-import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.moderation.Case.CaseType;
+import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -116,30 +118,41 @@ public class MuteCommand extends Command {
 				Utilities.reply(e.getMessage(), "No members matched! Check your input and try again!");
 			}
 			StringBuilder output = new StringBuilder("");
+			Logger logger = (Logger) LoggerFactory.getLogger("MuteCommand");
 			for(Member target : partialresult) {
+				logger.info("a");
 				if(target.isHigher(e.getMember().get()).block()) {
 					output.append("That user is above you!");
 					continue;
 				}
+				logger.info("b");
 				if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
 					output.append("That user is above the bot!");
 					continue;
 				}
+				logger.info("c");
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
 					output.append("I don't have permissions to manage roles!");	
 					return;
 				}
+				logger.info("d");
 				target.addRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
+				logger.info("e");
 				if(tempTime > 0) {
+					logger.info("f");
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
 					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.MUTE, 0, e.getGuild().block()));
 				} else {
+					logger.info("g");
 					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.MUTE, 0, e.getGuild().block()));
 				}
+				logger.info("h");
 				if(!silent) {
+					logger.info("i");
 					output.append(e.getMember().get().getMention() + " Muted "+target.getUsername());
 					continue;
 				}
+				logger.info("j");
 			}
 			Utilities.reply(e.getMessage(), output.toString());
 			return;
