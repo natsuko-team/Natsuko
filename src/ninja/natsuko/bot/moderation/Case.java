@@ -1,12 +1,15 @@
 package ninja.natsuko.bot.moderation;
 
+import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.bson.Document;
 
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
@@ -61,23 +64,75 @@ public class Case {
 	public User moderatorUser;
 	public Guild guild;
 	
-	public Date date;
+	public Instant date;
 	
 	// this should be overridden with the reason, if any
 	public String reason = "[No reason specified]";
 	
 	// only set if CaseType = TEMPMUTE | TEMPBAN
-	public Date expiryDate;
+	public Instant expiryDate;
 	
 	// must be set if CaseType = STRIKE | UNSTRIKE
-	public int strikes;
+	public int strikes = -1;
+	
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate) {
+		this.targetUser = target;
+		this.moderatorUser = moderator;
+		this.date = date;
+		this.type = type;
+		this.expiryDate = expiryDate;
+	}
+	
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason) {
+		this.targetUser = target;
+		this.moderatorUser = moderator;
+		this.date = date;
+		this.type = type;
+		this.expiryDate = expiryDate;
+		this.reason = reason;
+	}
+	
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate, int strikes) {
+		this.targetUser = target;
+		this.moderatorUser = moderator;
+		this.date = date;
+		this.type = type;
+		this.expiryDate = expiryDate;
+		this.strikes = strikes;
+	}
+	
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason, int strikes) {
+		this.targetUser = target;
+		this.moderatorUser = moderator;
+		this.date = date;
+		this.type = type;
+		this.expiryDate = expiryDate;
+		this.reason = reason;
+		this.strikes = strikes;
+	}
+	
+	/**
+	 * Converts the case into document form for storing in the DB
+	 * @return The case, in document form.
+	 */
+	public Document toDocument() {
+		Document out = new Document();
+		out.put("targetUser", this.targetUser.getId().asLong());
+		out.put("moderatorUser", this.moderatorUser.getId().asLong());
+		out.put("date", this.date.toEpochMilli());
+		out.put("type", this.type.toString().toLowerCase());
+		out.put("expiryDate", this.expiryDate);
+		out.put("reason", this.reason);
+		if(this.strikes == -1) out.put("strikes", this.strikes);
+		return out;
+	}
 	
 	/**
 	 * Generates a moderation log from this case to be sent as a Discord message.
 	 * @return The formatted mod log string.
 	 */
 	public String toModLog() {
-		String time = new SimpleDateFormat("HH:mm:ss").format(this.date);
+		String time = new SimpleDateFormat("HH:mm:ss").format(Date.from(this.date));
 		
 		String[] emojiForCase = this.caseToEmoji.get(this.type);
 		if (emojiForCase == null) { // should never get here but we'll add a case
@@ -143,7 +198,7 @@ public class Case {
 		
 		if (this.type == CaseType.TEMPBAN || this.type == CaseType.TEMPMUTE) {
 			finalStr += String.format(temporary, "Expires",
-					DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format((TemporalAccessor) this.expiryDate));
+					DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format((TemporalAccessor) Date.from(this.expiryDate)));
 		}
 		
 		return finalStr;
