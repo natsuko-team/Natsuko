@@ -135,6 +135,7 @@ public class BanCommand extends Command {
 					continue;
 				}
 			}
+			Utilities.reply(e.getMessage(), output.toString());
 			return;
 		}
 		Utilities.reply(e.getMessage(), "You dont have permissions to ban!");
