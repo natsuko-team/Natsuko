@@ -22,6 +22,7 @@ public class ConfigCommand extends Command {
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsAdministrator(e.getMember().get())) return;
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
+		System.out.println(aargs.toString());
 		if(Main.db.getCollection("guilds").countDocuments(Utilities.guildToFindDoc(e.getGuild().block())) == 0) {
 			Main.db.getCollection("guilds").insertOne(Utilities.initGuild(e.getGuild().block()));
 		}
