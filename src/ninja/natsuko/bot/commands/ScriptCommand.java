@@ -48,6 +48,7 @@ public class ScriptCommand extends Command {
 				guild.put("scripts", scripts);
 				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
 				Utilities.reply(e.getMessage(), "Added script "+scripts.size());
+				Main.modengine.get(e.getGuild().block().getId()).reload();
 				return;
 			}
 			break;
@@ -60,6 +61,7 @@ public class ScriptCommand extends Command {
 					guild.put("scripts", scripts);
 					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
 					Utilities.reply(e.getMessage(), "Edited script "+scriptToEdit+1);
+					Main.modengine.get(e.getGuild().block().getId()).reload();
 					return;
 				}
 			}
@@ -73,6 +75,7 @@ public class ScriptCommand extends Command {
 					guild.put("scripts", scripts);
 					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
 					Utilities.reply(e.getMessage(), "Deleted script "+scriptToEdit+1);
+					Main.modengine.get(e.getGuild().block().getId()).reload();
 				}
 			}
 			break;
