@@ -79,13 +79,6 @@ public class Main {
 			
 			
 			// commands area
-			if (!msg.startsWith("n;")) {
-				if(!modengine.containsKey(event.getGuild().block().getId())) {
-					modengine.put(event.getGuild().block().getId(),new ScriptRunner(event.getGuild().block()));
-				}
-				modengine.get(event.getGuild().block().getId()).run(event.getMessage());
-				return;
-			}
 			
 			String[] vomit;
 
@@ -100,6 +93,16 @@ public class Main {
 			
 			if(cmd.equalsIgnoreCase("kill") && event.getMember().get().getId().asLong() == event.getClient().getSelfId().get().asLong()) {
 				if(!msg.contains(inst))System.exit(0);
+			}
+			
+			if(event.getMember().get().isBot()) return;
+			
+			if (!msg.startsWith("n;")) {
+				if(!modengine.containsKey(event.getGuild().block().getId())) {
+					modengine.put(event.getGuild().block().getId(),new ScriptRunner(event.getGuild().block()));
+				}
+				modengine.get(event.getGuild().block().getId()).run(event.getMessage());
+				return;
 			}
 			
 			String[] args = Arrays.stream(vomit).skip(1).toArray(String[]::new);
