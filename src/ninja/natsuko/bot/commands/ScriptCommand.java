@@ -22,11 +22,14 @@ public class ScriptCommand extends Command {
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
 		Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 		List<String> scripts = guild.get("scripts",new ArrayList<>());
+		if(aargs.size() < 1) return;
 		switch(aargs.get(0)) {
 		case "show":
-			if(Utilities.isNumbers(aargs.get(1))) {
-				Utilities.reply(e.getMessage(), "```js\n"+scripts.get(Integer.parseInt(aargs.get(1))-1)+"```");
-				return;
+			if(aargs.size() > 1) {
+				if(Utilities.isNumbers(aargs.get(1))) {
+					Utilities.reply(e.getMessage(), "```js\n"+scripts.get(Integer.parseInt(aargs.get(1))-1)+"```");
+					return;
+				}
 			}
 			StringBuilder output = new StringBuilder("Script Slots:```");
 			for(int i = 0; i < scripts.size();i++) {
@@ -37,6 +40,7 @@ public class ScriptCommand extends Command {
 			}
 			break;
 		case "add":
+			if(aargs.size() < 2) return;
 			if(scripts.size() < 3) {
 				scripts.add(aargs.get(1));
 				guild.put("scripts", scripts);
@@ -46,6 +50,7 @@ public class ScriptCommand extends Command {
 			}
 			break;
 		case "edit":
+			if(aargs.size() < 3) return;
 			if(Utilities.isNumbers(aargs.get(1))) {
 				int scriptToEdit = Integer.parseInt(aargs.get(1))-1;
 				if(scripts.get(scriptToEdit) != null) {
@@ -58,6 +63,7 @@ public class ScriptCommand extends Command {
 			}
 			break;
 		case "delete":
+			if(aargs.size() < 2) return;
 			if(Utilities.isNumbers(aargs.get(1))) {
 				int scriptToEdit = Integer.parseInt(aargs.get(1))-1;
 				if(scripts.get(scriptToEdit) != null) {
