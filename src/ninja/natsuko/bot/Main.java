@@ -10,10 +10,13 @@ import java.util.Set;
 import org.bson.Document;
 import org.ini4j.Wini;
 import org.reflections.Reflections;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
@@ -34,6 +37,8 @@ public class Main {
 	
 	static String inst = "null";
 	public static void main(String[] args) {
+		Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		root.setLevel(Level.INFO);
 		timedEventThread = new Thread(new Runnable() {
 
 			@Override
