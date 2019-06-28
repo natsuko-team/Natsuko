@@ -28,7 +28,7 @@ public class ScriptRunner {
 	public ScriptRunner(Guild guild) {
 		this.guild = guild;
 		this.sandbox.setMaxCPUTime(60000);
-		this.sandbox.setMaxMemory(0);
+		this.sandbox.setMaxMemory(30000000);
 		this.sandbox.setExecutor(this.executor);
 		reload();
 	}
