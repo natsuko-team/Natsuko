@@ -135,6 +135,7 @@ public class Utilities {
 		Document guildoc = guildToFindDoc(guild);
 		guildoc.put("options", new HashMap<>());
 		guildoc.put("modlog", new ArrayList<>());
+		guildoc.put("scripts", new ArrayList<>());
 		return guildoc;
 	}
 	
