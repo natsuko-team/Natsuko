@@ -21,6 +21,9 @@ public class ConfigCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
+		if(Main.db.getCollection("guilds").countDocuments(Utilities.guildToFindDoc(e.getGuild().block())) == 0) {
+			Main.db.getCollection("guilds").insertOne(Utilities.initGuild(e.getGuild().block()));
+		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		switch(aargs.get(0)) {
 		case "show":
@@ -31,7 +34,7 @@ public class ConfigCommand extends Command {
 			}
 			output.append("\n```");
 			Utilities.reply(e.getMessage(), output.toString());
-			break;
+			return;
 		case "set":
 			switch(aargs.get(1)) {
 			case "modrole":
@@ -44,12 +47,11 @@ public class ConfigCommand extends Command {
 				Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 				guild.put("options", opts);
 				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
-				break;
+				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
-				break;
+				return;
 			}
-			break;
 		default:
 			Utilities.reply(e.getMessage(),"Invalid subcommand! Expected: show, set Got: " + aargs.get(0));
 			break;
