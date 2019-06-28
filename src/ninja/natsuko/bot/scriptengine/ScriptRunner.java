@@ -44,10 +44,11 @@ public class ScriptRunner {
 	public void run(Message message) {
 		if(this.scriptsErrored) return;
 		this.sandbox.allow(Snowflake.class);
+		this.sandbox.inject("util", new SafeUtils());
 		this.sandbox.inject("message", new SafeMessage(message));
 		for(String i : this.loadedScripts) {
 			try {
-				this.sandbox.eval("function id(string){Packages.discord4j.core.object.util.Snowflake.of(string)}\n"+i);
+				this.sandbox.eval("\n"+i);
 			} catch (ScriptCPUAbuseException e) {
 				Utilities.reply(message, "ERROR: A script exceeded the Memory or Time limit.\nPlease check your scripts for memory leaks or infinite loops.");
 				this.scriptsErrored = true;
