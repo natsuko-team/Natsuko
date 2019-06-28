@@ -30,10 +30,11 @@ public class Main {
 	public static MongoDatabase db;
 	public static DiscordClient client;
 	public static Map<Snowflake,ScriptRunner> modengine = new HashMap<>();
+	public static Thread timedEventThread;
 	
 	static String inst = "null";
 	public static void main(String[] args) {
-		Thread timedEventThread = new Thread(new Runnable() {
+		timedEventThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -74,6 +75,7 @@ public class Main {
 			}
 			
 		});
+		timedEventThread.start();
 		Reflections reflections = new Reflections("ninja.natsuko.bot.commands"); // restrict to command package to prevent unnecessary searching
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
 		commandClasses.forEach((cmd) -> {

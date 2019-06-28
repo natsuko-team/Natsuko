@@ -18,10 +18,10 @@ import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
-public class MuteCommand extends Command {
+public class UnmuteCommand extends Command {
 
-	public MuteCommand() {
-		super("mute", "Mute a user.");
+	public UnmuteCommand() {
+		super("unmute", "Unmute a user.");
 	}
 
 	
@@ -29,8 +29,7 @@ public class MuteCommand extends Command {
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
-		boolean muteAll = false;
-		long tempTime = -1l;
+		boolean unmuteAll = false;
 		boolean silent = false;
 		if(!opts.containsKey("mutedrole")) {
 			Utilities.reply(e.getMessage(), "The Muted Role has not been set! Please set it with `n;config set mutedrole <role id or mention>`");
@@ -44,30 +43,8 @@ public class MuteCommand extends Command {
 					continue;
 				}
 				if(i.matches("^-A|--all$")){
-					muteAll = true;
+					unmuteAll = true;
 					continue;
-				}
-				if(i.matches("^(?:-t|--temp)=(\\d+)(s|m|h|d|w)$")) {
-					Matcher m = Pattern.compile("^(?:-t|--temp)=(\\d+)(m|h|d|w)$",Pattern.CASE_INSENSITIVE).matcher(i);
-					long time = Long.parseLong(m.group(1));
-					String unit = m.group(2).toLowerCase();
-					switch(unit) {
-					case "m":
-						time = time*60*1000;
-						break;
-					case "h":
-						time = time*60*60*1000;
-						break;
-					case "d":
-						time = time*24*60*60*1000;
-						break;
-					case "w":
-						time = time*7*24*60*60*1000;
-						break;
-					default:
-						break;
-					}
-					tempTime = Instant.now().plusMillis(time).toEpochMilli();
 				}
 			}
 			if(Utilities.isNumbers(actualArgs.get(0).replaceAll("[<@!>]", ""))) {
@@ -85,13 +62,10 @@ public class MuteCommand extends Command {
 						Utilities.reply(e.getMessage(), "I don't have permissions to manage roles!");	
 						return;
 					}
-					target.addRole(Snowflake.of(opts.get("mutedrole").toString()));
-					if(tempTime > 0) {
-						Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
-					}
+					target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
 					//TODO properly modlog it @lewistehminerz
 					if(!silent) {
-						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Muted "+target.getUsername());
+						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 						return;
 					}
 					return;
@@ -99,7 +73,7 @@ public class MuteCommand extends Command {
 				
 			}
 			List<Member> partialresult = ArgumentParser.toMemberByPartial(actualArgs.get(0), e.getGuild().block());	
-			if(partialresult.size() > 1 && !muteAll) {
+			if(partialresult.size() > 1 && !unmuteAll) {
 				Utilities.reply(e.getMessage(), "There are more than one member that match that input!\n```\n"+
 						String.join("\n", partialresult.stream().map(a->{return a.getUsername()+"#"+a.getDiscriminator();}).collect(Collectors.toList()))+"\n```");
 				return;
@@ -121,13 +95,10 @@ public class MuteCommand extends Command {
 					output.append("I don't have permissions to manage roles!");	
 					return;
 				}
-				target.addRole(Snowflake.of(opts.get("mutedrole").toString()));
-				if(tempTime > 0) {
-					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
-				}
+				target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
 				//TODO modlog it properly
 				if(!silent) {
-					output.append(e.getMember().get().getMention() + " Muted "+target.getUsername());
+					output.append(e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 					continue;
 				}
 			}
