@@ -75,7 +75,7 @@ public class Main {
 							}
 						} catch(Exception e) {
 							db.getCollection("timed").deleteOne(i); //it failed to remove it so it doesnt fuck up more things
-							e.printStackTrace(); //TODO properly log exception in timed thread
+							root.error("error in timedthread",e);
 						}
 					}
 				}
