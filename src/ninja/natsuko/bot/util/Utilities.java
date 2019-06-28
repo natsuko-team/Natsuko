@@ -128,7 +128,7 @@ public class Utilities {
 	}
 
 	public static Document guildToFindDoc(Guild guild) {
-		return Document.parse("{\"_id\":"+guild.getId().asString()+"}");
+		return Document.parse("{\"id\":"+guild.getId().asString()+"}");
 	}
 	
 	public static Document initGuild(Guild guild) {
