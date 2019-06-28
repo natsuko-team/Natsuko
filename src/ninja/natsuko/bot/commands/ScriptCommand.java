@@ -36,7 +36,7 @@ public class ScriptCommand extends Command {
 				output.append((i+1)+": Used\n");
 			}
 			for(int i = scripts.size(); i < 6;i++) {
-				output.append(i>3?(i+1)+": *RESERVED*":(i+1)+": Free");
+				output.append(i>3?(i+1)+": *RESERVED*\n":(i+1)+": Free\n");
 			}
 			output.append("```");
 			Utilities.reply(e.getMessage(), output.toString());
