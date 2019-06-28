@@ -62,11 +62,12 @@ public class Main {
 								break;
 							case "unmute":
 								long roleId = 0l;
-								if(!opts.containsKey("mutedrole")) continue; //wtf?
+								if(!opts.containsKey("mutedrole")) {root.info("Mutedrole didnt exist upon auto-unmute"); return;} //wtf?
 								roleId = Long.parseLong(opts.get("mutedrole").toString());
 								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().getMemberById(Snowflake.of(i.getString("target"))).block().removeRole(
 										Snowflake.of(roleId), "Natsuko auto-unmute after "+i.getLong("due")+"ms");
 								db.getCollection("timed").deleteOne(i);
+								root.info("Unmuted a user", i);
 								break;
 							case "unstrike":
 								break;
