@@ -81,7 +81,7 @@ public class KickCommand extends Command {
 				}
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 					output.append("I don't have permissions to ban!\n");	
-					return;
+					break;
 				}
 				String reason = String.join(" ", args);
 				if(reason.split(args[0]).length > 1) {

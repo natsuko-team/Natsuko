@@ -70,7 +70,7 @@ public class UnbanCommand extends Command {
 			for(User target : partialresult) {
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
 					output.append("I don't have permissions to Unban!");	
-					return;
+					break;
 				}
 				e.getGuild().block().unban(target.getId()).subscribe();
 				String reason = String.join(" ", args);

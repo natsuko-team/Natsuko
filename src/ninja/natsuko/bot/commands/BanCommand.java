@@ -131,7 +131,7 @@ public class BanCommand extends Command {
 				}
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 					output.append("I don't have permissions to ban!\n");	
-					return;
+					break;
 				}
 				int tbandays = bandays;
 				String reason = String.join(" ", args);

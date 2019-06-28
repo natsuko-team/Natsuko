@@ -133,18 +133,22 @@ public class MuteCommand extends Command {
 				logger.info("c");
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
 					output.append("I don't have permissions to manage roles!");	
-					return;
+					break;
 				}
 				logger.info("d");
 				target.addRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
 				logger.info("e");
+				String reason = String.join(" ", args);
+				if(reason.split(args[0]).length > 1) {
+					reason = reason.split(args[0])[1];
+				} else reason = "[no reason specified]";
 				if(tempTime > 0) {
 					logger.info("f");
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.MUTE, 0, e.getGuild().block()));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, Instant.ofEpochMilli(tempTime), CaseType.MUTE, 0, e.getGuild().block()));
 				} else {
 					logger.info("g");
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.MUTE, 0, e.getGuild().block()));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.MUTE, 0, e.getGuild().block()));
 				}
 				logger.info("h");
 				if(!silent) {

@@ -94,7 +94,7 @@ public class UnmuteCommand extends Command {
 				}
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
 					output.append("I don't have permissions to manage roles!");	
-					return;
+					break;
 				}
 				target.removeRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
 				String reason = String.join(" ", args);
