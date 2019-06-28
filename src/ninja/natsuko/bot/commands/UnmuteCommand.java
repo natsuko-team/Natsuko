@@ -59,7 +59,7 @@ public class UnmuteCommand extends Command {
 						Utilities.reply(e.getMessage(), "I don't have permissions to manage roles!");	
 						return;
 					}
-					target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
+					target.removeRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
 					String reason = String.join(" ", args);
 					if(reason.split(args[0]).length > 1) {
 						reason = reason.split(args[0])[1];
@@ -96,7 +96,7 @@ public class UnmuteCommand extends Command {
 					output.append("I don't have permissions to manage roles!");	
 					return;
 				}
-				target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
+				target.removeRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
 				String reason = String.join(" ", args);
 				if(reason.split(args[0]).length > 1) {
 					reason = reason.split(args[0])[1];

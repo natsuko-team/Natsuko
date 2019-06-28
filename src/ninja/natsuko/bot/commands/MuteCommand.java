@@ -87,7 +87,7 @@ public class MuteCommand extends Command {
 						Utilities.reply(e.getMessage(), "I don't have permissions to manage roles!");	
 						return;
 					}
-					target.addRole(Snowflake.of(opts.get("mutedrole").toString()));
+					target.addRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
 					String reason = String.join(" ", args);
 					if(reason.split(args[0]).length > 1) {
 						reason = reason.split(args[0])[1];
@@ -129,7 +129,7 @@ public class MuteCommand extends Command {
 					output.append("I don't have permissions to manage roles!");	
 					return;
 				}
-				target.addRole(Snowflake.of(opts.get("mutedrole").toString()));
+				target.addRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
 				if(tempTime > 0) {
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
 					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.MUTE, 0, e.getGuild().block()));

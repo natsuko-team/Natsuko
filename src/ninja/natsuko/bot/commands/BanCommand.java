@@ -139,7 +139,7 @@ public class BanCommand extends Command {
 					reason = reason.split(args[0])[1];
 				} else reason = "[no reason specified]";
 				String treason = reason;
-				target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+treason);}).subscribe();			//TODO properly modlog it @lewistehminerz
+				target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+treason);}).subscribe();
 				if(tempTime > 0) {
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
 					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));

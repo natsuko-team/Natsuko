@@ -42,7 +42,7 @@ public class UnbanCommand extends Command {
 						Utilities.reply(e.getMessage(), "I don't have permissions to unban!");	
 						return;
 					}
-					e.getGuild().block().unban(target.getId(),"");
+					e.getGuild().block().unban(target.getId(),"").subscribe();
 					
 					String reason = String.join(" ", args);
 					if(reason.split(args[0]).length > 1) {
@@ -72,7 +72,7 @@ public class UnbanCommand extends Command {
 					output.append("I don't have permissions to Unban!");	
 					return;
 				}
-				e.getGuild().block().unban(target.getId());
+				e.getGuild().block().unban(target.getId()).subscribe();
 				String reason = String.join(" ", args);
 				if(reason.split(args[0]).length > 1) {
 					reason = reason.split(args[0])[1];
