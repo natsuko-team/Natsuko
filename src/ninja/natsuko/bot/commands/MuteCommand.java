@@ -82,7 +82,7 @@ public class MuteCommand extends Command {
 						return;
 					}
 					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
-						Utilities.reply(e.getMessage(), "I don't have permissions to ban!");	
+						Utilities.reply(e.getMessage(), "I don't have permissions to manage roles!");	
 						return;
 					}
 					target.addRole(Snowflake.of(opts.get("mutedrole").toString()));
