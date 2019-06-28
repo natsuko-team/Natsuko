@@ -25,8 +25,10 @@ public class EvalCommand extends Command {
 		ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 		engine.put("e", e);
 		engine.put("args", args);
+		
 		try {
-			engine.eval(String.join(" ", args));
+			Object output = engine.eval(String.join(" ", args)).toString();
+			Utilities.reply(e.getMessage(), "```["+output.getClass().getTypeName()+"]"+output+"```");
 		} catch (ScriptException e1) {
 			StringWriter string = new StringWriter();
 			PrintWriter print = new PrintWriter(string);
