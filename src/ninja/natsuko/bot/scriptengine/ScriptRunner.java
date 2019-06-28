@@ -37,6 +37,7 @@ public class ScriptRunner {
 	
 	public void reload() {
 		this.loadedScripts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(this.guild)).first().get("scripts",new ArrayList<String>());
+		this.scriptsErrored = false;
 	}
 	
 	public void run(Message message) {
