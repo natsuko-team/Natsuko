@@ -23,13 +23,11 @@ public class ConfigCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsAdministrator(e.getMember().get())) return;
-		Logger logger = LoggerFactory.getLogger(this.getClass());
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
 		if(Main.db.getCollection("guilds").countDocuments(Utilities.guildToFindDoc(e.getGuild().block())) == 0) {
 			Main.db.getCollection("guilds").insertOne(Utilities.initGuild(e.getGuild().block()));
 		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
-		logger.info(aargs.toString());
 		switch(aargs.get(0)) {
 		case "show":
 			StringBuilder output = new StringBuilder("Config Options:```\n");
