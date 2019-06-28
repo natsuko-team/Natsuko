@@ -1,6 +1,8 @@
 package ninja.natsuko.bot;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -166,7 +168,12 @@ public class Main {
 			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
 			return;
 		} catch(Exception e) {
-			e.printStackTrace(); //TODO log properly kthhnx
+			StringWriter string = new StringWriter();
+			PrintWriter print = new PrintWriter(string);
+			e.printStackTrace(print);
+			String trace = string.toString();
+			event.getMessage().getChannel().block().createMessage(":warning: An error has occurred!\n```"+trace+"```");
+			e.printStackTrace();
 		}
 	}
 }
