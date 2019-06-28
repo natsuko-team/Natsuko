@@ -31,7 +31,7 @@ public class KickCommand extends Command {
 				}
 				target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
 				//TODO properly modlog it @lewistehminerz
-				if(actualArgs.get(1).matches("-s|--silent")) {
+				if(!actualArgs.get(1).matches("-s|--silent")) {
 					Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
 				}
 			}
@@ -53,7 +53,7 @@ public class KickCommand extends Command {
 			}
 			target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
 			//TODO properly modlog it @lewistehminerz
-			if(actualArgs.get(1).matches("-s|--silent")) {
+			if(!actualArgs.get(1).matches("-s|--silent")) {
 				Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
 			}
 		}
