@@ -40,7 +40,7 @@ public class ScriptCommand extends Command {
 			if(scripts.size() < 3) {
 				scripts.add(aargs.get(1));
 				guild.put("scripts", scripts);
-				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
 				Utilities.reply(e.getMessage(), "Added script "+scripts.size());
 				return;
 			}
@@ -51,7 +51,7 @@ public class ScriptCommand extends Command {
 				if(scripts.get(scriptToEdit) != null) {
 					scripts.set(scriptToEdit, aargs.get(2));
 					guild.put("scripts", scripts);
-					Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
+					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
 					Utilities.reply(e.getMessage(), "Edited script "+scriptToEdit+1);
 					return;
 				}
@@ -63,7 +63,7 @@ public class ScriptCommand extends Command {
 				if(scripts.get(scriptToEdit) != null) {
 					scripts.remove(scriptToEdit);
 					guild.put("scripts", scripts);
-					Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
+					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
 					Utilities.reply(e.getMessage(), "Deleted script "+scriptToEdit+1);
 				}
 			}
