@@ -48,7 +48,7 @@ public class ConfigCommand extends Command {
 				}
 				
 				guild.put("options", opts);
-				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
 				return;
 			case "adminrole":
 				if(Utilities.isNumbers(aargs.get(2))) {
@@ -58,7 +58,7 @@ public class ConfigCommand extends Command {
 					}
 				}
 				guild.put("options", opts);
-				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
 				return;
 			case "mutedrole":
 				if(Utilities.isNumbers(aargs.get(2))) {
@@ -68,7 +68,7 @@ public class ConfigCommand extends Command {
 					}
 				}
 				guild.put("options", opts);
-				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
 				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
