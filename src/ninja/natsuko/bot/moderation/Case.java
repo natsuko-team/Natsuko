@@ -66,6 +66,8 @@ public class Case {
 	
 	public Instant date;
 	
+	public int id; //this is per guild
+	
 	// this should be overridden with the reason, if any
 	public String reason = "[No reason specified]";
 	
@@ -75,33 +77,36 @@ public class Case {
 	// must be set if CaseType = STRIKE | UNSTRIKE
 	public int strikes = -1;
 	
-	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate) {
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate, int id) {
 		this.targetUser = target;
 		this.moderatorUser = moderator;
 		this.date = date;
 		this.type = type;
 		this.expiryDate = expiryDate;
+		this.id = id;
 	}
 	
-	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason) {
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason, int id) {
 		this.targetUser = target;
 		this.moderatorUser = moderator;
 		this.date = date;
 		this.type = type;
 		this.expiryDate = expiryDate;
 		this.reason = reason;
+		this.id = id;
 	}
 	
-	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate, int strikes) {
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate, int strikes, int id) {
 		this.targetUser = target;
 		this.moderatorUser = moderator;
 		this.date = date;
 		this.type = type;
 		this.expiryDate = expiryDate;
 		this.strikes = strikes;
+		this.id = id;
 	}
 	
-	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason, int strikes) {
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason, int strikes, int id) {
 		this.targetUser = target;
 		this.moderatorUser = moderator;
 		this.date = date;
@@ -109,6 +114,7 @@ public class Case {
 		this.expiryDate = expiryDate;
 		this.reason = reason;
 		this.strikes = strikes;
+		this.id = id;
 	}
 	
 	/**
