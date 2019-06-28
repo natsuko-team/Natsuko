@@ -39,17 +39,26 @@ public class Main {
 			public void run() {
 				while(true) {
 					try {
-						Thread.sleep(60000);
+						Thread.sleep(30000);
 					} catch (InterruptedException e) {
-						//dont care because interrupt means process timed e
+						//dont care because interrupt means process timed e's immediately
 					}
+					if(!client.isConnected()) continue; //client isnt ready yet dont jump the shit
 					for(Document i : db.getCollection("timed").find(Document.parse("{\"due\":{\"$lte\":"+Instant.now().toEpochMilli()+"}}"))) {
+						Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(client.getGuildById(Snowflake.of(i.getLong("guild"))).block())).first().get("options", new HashMap<>());
 						try {
 							switch(i.getString("type")) {
 							case "unban":
-								
+								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+i.getLong("due")+"ms");
+								db.getCollection("timed").deleteOne(i);
 								break;
 							case "unmute":
+								long roleId = 0l;
+								if(!opts.containsKey("mutedrole")) continue; //wtf?
+								roleId = Long.parseLong(opts.get("mutedrole").toString());
+								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().getMemberById(Snowflake.of(i.getString("target"))).block().removeRole(
+										Snowflake.of(roleId), "Natsuko auto-unmute after "+i.getLong("due")+"ms");
+								db.getCollection("timed").deleteOne(i);
 								break;
 							case "unstrike":
 								break;
@@ -57,6 +66,7 @@ public class Main {
 								break;
 							}
 						} catch(Exception e) {
+							db.getCollection("timed").deleteOne(i); //it failed to remove it so it doesnt fuck up more things
 							e.printStackTrace(); //TODO properly log exception in timed thread
 						}
 					}
