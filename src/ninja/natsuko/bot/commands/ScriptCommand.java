@@ -38,6 +38,7 @@ public class ScriptCommand extends Command {
 			for(int i = scripts.size(); i < 6;i++) {
 				output.append(i>3?(i+1)+": *RESERVED*":(i+1)+": Free");
 			}
+			Utilities.reply(e.getMessage(), output.toString());
 			break;
 		case "add":
 			if(aargs.size() < 2) return;
