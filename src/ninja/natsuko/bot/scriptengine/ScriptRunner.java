@@ -12,6 +12,7 @@ import delight.nashornsandbox.NashornSandboxes;
 import delight.nashornsandbox.exceptions.ScriptCPUAbuseException;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -42,10 +43,11 @@ public class ScriptRunner {
 	
 	public void run(Message message) {
 		if(this.scriptsErrored) return;
+		this.sandbox.allow(Snowflake.class);
 		this.sandbox.inject("message", new SafeMessage(message));
 		for(String i : this.loadedScripts) {
 			try {
-				this.sandbox.eval(i);
+				this.sandbox.eval("function id(string){Packages.discord4j.core.object.util.Snowflake.of(string)}\n"+i);
 			} catch (ScriptCPUAbuseException e) {
 				Utilities.reply(message, "ERROR: A script exceeded the Memory or Time limit.\nPlease check your scripts for memory leaks or infinite loops.");
 				this.scriptsErrored = true;
