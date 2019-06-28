@@ -2,8 +2,6 @@ package ninja.natsuko.bot.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.Channel;
@@ -11,13 +9,15 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
+import jregex.Matcher;
+import jregex.Pattern;
 import ninja.natsuko.bot.Main;
 
 public class ArgumentParser {
 
 	public static List<String> toArgs(String string){
 		List<String> temp = new ArrayList<>();
-		Matcher baseMatcher = Pattern.compile("\"((?:.*?)(?!\\\").)\"|(\\S+)").matcher(string);
+		Matcher baseMatcher = new Pattern("\"((?:.*?)(?!\\\").)\"|(\\S+)").matcher(string);
 		while (baseMatcher.find()) {
 			String match = baseMatcher.group(1);
 		    temp.add(match);
