@@ -12,7 +12,7 @@ import ninja.natsuko.bot.util.Utilities;
 
 public class EvalCommand extends Command {
 
-	public EvalCommand(String commandName, String description) {
+	public EvalCommand() {
 		super("eval", "Evaluate Nashorn code.");
 	}
 
