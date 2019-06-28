@@ -31,6 +31,7 @@ public class MuteCommand extends Command {
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		boolean muteAll = false;
 		long tempTime = -1l;
+		boolean silent = false;
 		if(!opts.containsKey("mutedrole")) {
 			Utilities.reply(e.getMessage(), "The Muted Role has not been set! Please set it with `n;config set mutedrole <role id or mention>`");
 			return;
@@ -38,6 +39,10 @@ public class MuteCommand extends Command {
 		if(!e.getMember().isPresent()) return;
 		if(Utilities.userIsModerator(e.getMember().get())) {
 			for(String i : actualArgs) {
+				if(i.matches("-s|--silent")) {
+					silent = true;
+					continue;
+				}
 				if(i.matches("^-A|--all$")){
 					muteAll = true;
 					continue;
@@ -85,7 +90,7 @@ public class MuteCommand extends Command {
 						Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
 					}
 					//TODO properly modlog it @lewistehminerz
-					if(!actualArgs.get(1).matches("-s|--silent")) {
+					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Muted "+target.getUsername());
 						return;
 					}
@@ -121,7 +126,7 @@ public class MuteCommand extends Command {
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unmute\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
 				}
 				//TODO modlog it properly
-				if(!actualArgs.get(1).matches("-s|--silent")) {
+				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Muted "+target.getUsername());
 					continue;
 				}
