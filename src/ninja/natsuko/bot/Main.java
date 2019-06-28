@@ -1,6 +1,7 @@
 package ninja.natsuko.bot;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,11 +15,13 @@ import com.mongodb.client.MongoDatabase;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.commands.Command;
+import ninja.natsuko.bot.util.Utilities;
 
 public class Main {
 	public static Map<String, Command> commands = new HashMap<>();
@@ -50,6 +53,12 @@ public class Main {
 				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
 				return;
 			});	
+			client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(event->{
+				if(event.getGuild().getJoinTime().get().isAfter(Instant.now().minusMillis(1000l))) {
+					Main.db.getCollection("guilds").insertOne(Utilities.initGuild(event.getGuild()));
+					//TODO fuck botfarms
+				}
+			});
 			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Main::processCommand);
 			client.login().block();
 		} catch (IOException e) {
