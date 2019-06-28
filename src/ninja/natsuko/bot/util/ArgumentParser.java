@@ -17,7 +17,7 @@ public class ArgumentParser {
 
 	public static List<String> toArgs(String string){
 		List<String> temp = new ArrayList<>();
-		Matcher baseMatcher = Pattern.compile("").matcher(string);
+		Matcher baseMatcher = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(string);
 		while (baseMatcher.find()) {
 		    temp.add(baseMatcher.group(1));
 		}
