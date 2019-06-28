@@ -17,7 +17,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class ConfigCommand extends Command {
 
 	public ConfigCommand() {
-		super("config", "Configure Natsuko settings for your server.");
+		super("config", "Configure Natsuko settings for your server. Must be server administrator.");
 	}
 
 	@Override
