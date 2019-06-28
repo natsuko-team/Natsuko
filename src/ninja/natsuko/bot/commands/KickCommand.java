@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
+import ninja.natsuko.bot.moderation.ModLogger;
+import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -45,7 +47,7 @@ public class KickCommand extends Command {
 						return;
 					}
 					target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
-					//TODO properly modlog it @lewistehminerz
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.KICK, 0, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
 						return;
@@ -78,7 +80,7 @@ public class KickCommand extends Command {
 					return;
 				}
 				target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
-				//TODO properly modlog it @lewistehminerz
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.KICK, 0, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Kicked "+target.getUsername()+"\n");
 					continue;
