@@ -31,13 +31,13 @@ public class ArgumentParser {
 		return Main.client.getUsers().filter(m->{return (m.getUsername()+"#"+m.getDiscriminator() == dtag);}).collect(Collectors.toList()).block();
 	}
 	public static List<User> toUserByPartial(String partial) {
-		return Main.client.getUsers().filter(m->{return ((m.getUsername()+"#"+m.getDiscriminator()).contains(partial));}).collect(Collectors.toList()).block();
+		return Main.client.getUsers().filter(m->{return ((m.getUsername().toLowerCase()+"#"+m.getDiscriminator()).contains(partial.toLowerCase()));}).collect(Collectors.toList()).block();
 	}
 	public static List<Member> toMemberByDTag(String dtag,Guild guild) {
 		return guild.getMembers().filter(m->{return (m.getUsername()+"#"+m.getDiscriminator() == dtag);}).collect(Collectors.toList()).block();
 	}
 	public static List<Member> toMemberByPartial(String partial,Guild guild) {
-		return guild.getMembers().filter(m->{return ((m.getUsername()+"#"+m.getDiscriminator()).contains(partial));}).collect(Collectors.toList()).block();
+		return guild.getMembers().filter(m->{return ((m.getUsername().toLowerCase()+"#"+m.getDiscriminator()).contains(partial.toLowerCase()));}).collect(Collectors.toList()).block();
 	}
 	public static Member toMemberByID(String user, Guild guild) {
 		return guild.getMemberById(Snowflake.of(user)).block();
