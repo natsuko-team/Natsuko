@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 
@@ -118,13 +119,12 @@ public class Utilities {
 	}
 	
 	public static boolean userIsStaff(User user) {
-		List<Member> members = Main.client.getGuildById(Snowflake.of(591720852891107328L)).block() // natsuko bot guild
+		List<Snowflake> members = Main.client.getGuildById(Snowflake.of(591720852891107328L)).block() // natsuko bot guild
 				.getMembers() //get members
 				.filter(m->m.getRoleIds().contains(Snowflake.of(593506464816168992L))) // only staff
-				.filter(m->m.getId() == user.getId()) // only user
-				.collectList().block(); // make it a list
+				.collectList().block().stream().map(m->m.getId()).collect(Collectors.toList()); // make it a list
 		
-		return members.size() == 1; // will only ever be 0 or 1
+		return members.contains(user.getId());
 	}
 
 	public static Document guildToFindDoc(Guild guild) {
