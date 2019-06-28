@@ -3,4 +3,6 @@
 
 Natsuko is an Advanced Moderation Bot to protect your Discord server.
 
+Docs: https://docs.natsuko.ninja
+
 Trello: https://trello.com/b/K8qxjg5u/natsuko
