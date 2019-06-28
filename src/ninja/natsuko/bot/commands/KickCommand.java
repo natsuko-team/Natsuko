@@ -45,6 +45,9 @@ public class KickCommand extends Command {
 						String.join("\n", partialresult.stream().map(a->{return a.getUsername()+"#"+a.getDiscriminator();}).collect(Collectors.toList()))+"\n```");
 				return;
 			}
+			if(partialresult.size() < 1) {
+				Utilities.reply(e.getMessage(), "No members matched! Check your input and try again!");
+			}
 			Member target = partialresult.get(0);
 			if(target.isHigher(e.getMember().get()).block()) {
 				Utilities.reply(e.getMessage(), "That user is above you!");
