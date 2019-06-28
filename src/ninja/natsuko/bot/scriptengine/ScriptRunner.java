@@ -42,7 +42,7 @@ public class ScriptRunner {
 	
 	public void run(Message message) {
 		if(this.scriptsErrored) return;
-		this.sandbox.inject("message", message);
+		this.sandbox.inject("message", new SafeMessage(message));
 		for(String i : this.loadedScripts) {
 			try {
 				this.sandbox.eval(i);
