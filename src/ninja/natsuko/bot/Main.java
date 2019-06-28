@@ -37,7 +37,7 @@ public class Main {
 	
 	static String inst = "null";
 	public static void main(String[] args) {
-		Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		Logger root = (Logger)LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 		root.setLevel(Level.INFO);
 		timedEventThread = new Thread(new Runnable() {
 
