@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.bson.Document;
 import org.ini4j.Wini;
 import org.reflections.Reflections;
 
@@ -32,6 +33,37 @@ public class Main {
 	
 	static String inst = "null";
 	public static void main(String[] args) {
+		Thread timedEventThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while(true) {
+					try {
+						Thread.sleep(60000);
+					} catch (InterruptedException e) {
+						//dont care because interrupt means process timed e
+					}
+					for(Document i : db.getCollection("timed").find(Document.parse("{\"due\":{\"$lte\":"+Instant.now().toEpochMilli()+"}}"))) {
+						try {
+							switch(i.getString("type")) {
+							case "unban":
+								
+								break;
+							case "unmute":
+								break;
+							case "unstrike":
+								break;
+							default:
+								break;
+							}
+						} catch(Exception e) {
+							e.printStackTrace(); //TODO properly log exception in timed thread
+						}
+					}
+				}
+			}
+			
+		});
 		Reflections reflections = new Reflections("ninja.natsuko.bot.commands"); // restrict to command package to prevent unnecessary searching
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
 		commandClasses.forEach((cmd) -> {
