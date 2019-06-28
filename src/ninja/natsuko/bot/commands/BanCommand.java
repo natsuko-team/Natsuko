@@ -90,12 +90,17 @@ public class BanCommand extends Command {
 						return;
 					}
 					int tbandays = bandays;
-					target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1));}).subscribe();
+					String reason = String.join(" ", args);
+					if(reason.split(args[0]).length > 1) {
+						reason = reason.split(args[0])[1];
+					} else reason = "[no reason specified]";
+					String treason = reason;
+					target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+treason);}).subscribe();
 					if(tempTime > 0) {
 						Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
-						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
 					} else {
-						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.BAN, 0, e.getGuild().block()));
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.BAN, 0, e.getGuild().block()));
 					}
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Banned "+target.getUsername());
@@ -129,12 +134,17 @@ public class BanCommand extends Command {
 					return;
 				}
 				int tbandays = bandays;
-				target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1));}).subscribe();			//TODO properly modlog it @lewistehminerz
+				String reason = String.join(" ", args);
+				if(reason.split(args[0]).length > 1) {
+					reason = reason.split(args[0])[1];
+				} else reason = "[no reason specified]";
+				String treason = reason;
+				target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+treason);}).subscribe();			//TODO properly modlog it @lewistehminerz
 				if(tempTime > 0) {
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
 				} else {
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.BAN, 0, e.getGuild().block()));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.BAN, 0, e.getGuild().block()));
 				}
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Banned "+target.getUsername()+"\n");

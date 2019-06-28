@@ -60,7 +60,11 @@ public class UnmuteCommand extends Command {
 						return;
 					}
 					target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNMUTE, 0, e.getGuild().block()));
+					String reason = String.join(" ", args);
+					if(reason.split(args[0]).length > 1) {
+						reason = reason.split(args[0])[1];
+					} else reason = "[no reason specified]";
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNMUTE, 0, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 						return;
@@ -93,7 +97,11 @@ public class UnmuteCommand extends Command {
 					return;
 				}
 				target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
-				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNMUTE, 0, e.getGuild().block()));
+				String reason = String.join(" ", args);
+				if(reason.split(args[0]).length > 1) {
+					reason = reason.split(args[0])[1];
+				} else reason = "[no reason specified]";
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNMUTE, 0, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 					continue;
