@@ -129,6 +129,7 @@ public class Case {
 		out.put("type", this.type.toString().toLowerCase());
 		out.put("expiryDate", this.expiryDate);
 		out.put("reason", this.reason);
+		out.put("id", this.id);
 		if(this.strikes == -1) out.put("strikes", this.strikes);
 		return out;
 	}

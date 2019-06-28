@@ -20,6 +20,9 @@ public class ScriptCommand extends Command {
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsAdministrator(e.getMember().get())) return;
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
+		if(aargs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+		}
 		Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 		List<String> scripts = guild.get("scripts",new ArrayList<>());
 		if(aargs.size() < 1) return;

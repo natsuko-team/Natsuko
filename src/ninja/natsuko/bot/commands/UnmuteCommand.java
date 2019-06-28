@@ -25,6 +25,9 @@ public class UnmuteCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		boolean unmuteAll = false;
 		boolean silent = false;

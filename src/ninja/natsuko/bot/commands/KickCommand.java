@@ -21,6 +21,9 @@ public class KickCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+		}
 		boolean kickAll = false;
 		boolean silent = false;
 		if(!e.getMember().isPresent()) return;

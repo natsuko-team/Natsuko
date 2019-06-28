@@ -14,8 +14,8 @@ public class IdentifyCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		if(args.length !=1 ) {
-			Utilities.reply(e.getMessage(), "Not enough arguments! Usage: n;identify <mention or id>");
+		if(args.length == 0) {
+			Utilities.reply(e.getMessage(), this.description);
 		}
 		if(Utilities.isNumbers(args[0].replaceAll("[<@!>]", ""))) {
 			long userId = Long.parseLong(args[0].replaceAll("[<@!>]", ""));

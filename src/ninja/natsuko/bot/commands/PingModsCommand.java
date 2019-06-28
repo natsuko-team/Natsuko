@@ -20,6 +20,9 @@ public class PingModsCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
+		if(args.length == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		Long modRole = (Long) opts.getOrDefault("modrole",null);
 		if(modRole == null) {

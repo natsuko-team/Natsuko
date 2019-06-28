@@ -20,10 +20,16 @@ public class ConfigCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		if(!Utilities.userIsAdministrator(e.getMember().get())) return;
+		if(!Utilities.userIsAdministrator(e.getMember().get())) {
+			Utilities.reply(e.getMessage(), "You dont have permission to do this!");
+			return;
+		}
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
 		if(Main.db.getCollection("guilds").countDocuments(Utilities.guildToFindDoc(e.getGuild().block())) == 0) {
 			Main.db.getCollection("guilds").insertOne(Utilities.initGuild(e.getGuild().block()));
+		}
+		if(aargs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
 		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		switch(aargs.get(0)) {
@@ -46,7 +52,7 @@ public class ConfigCommand extends Command {
 						opts.put("modrole",modRole);
 						guild.put("options", opts);
 						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
-						Utilities.reply(e.getMessage(), "Set modrole to "+modRole);
+						Utilities.reply(e.getMessage(), "Set Mod-Role to <@&"+modRole+">");
 						return;
 					}
 				}
@@ -59,7 +65,7 @@ public class ConfigCommand extends Command {
 						opts.put("adminrole",modRole);
 						guild.put("options", opts);
 						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
-						Utilities.reply(e.getMessage(), "Set adminrole to "+modRole);
+						Utilities.reply(e.getMessage(), "Set Admin-Role to <@&"+modRole+">");
 						return;
 					}
 				}
@@ -72,11 +78,24 @@ public class ConfigCommand extends Command {
 						opts.put("mutedrole",modRole);
 						guild.put("options", opts);
 						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
-						Utilities.reply(e.getMessage(), "Set mutedrole to "+modRole);
+						Utilities.reply(e.getMessage(), "Set Muted-Role to <@&"+modRole+">");
 						return;
 					}
 				}
 				Utilities.reply(e.getMessage(), "Invalid value! Expected: Role got:"+aargs.get(2).replaceAll("[<@&>]", ""));
+				return;
+			case "modlog":
+				if(Utilities.isNumbers(aargs.get(2).replaceAll("[<@#>]", ""))) {
+					long modRole = Long.parseLong(aargs.get(2).replaceAll("[<@#>]", ""));
+					if(e.getGuild().block().getChannelById(Snowflake.of(modRole)) != null) {
+						opts.put("modlog",modRole);
+						guild.put("options", opts);
+						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+						Utilities.reply(e.getMessage(), "Set Modlog Channel to <#"+modRole+">");
+						return;
+					}
+				}
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: Channel got:"+aargs.get(2).replaceAll("[<@&>]", ""));
 				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");

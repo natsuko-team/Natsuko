@@ -9,9 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
-import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Logger;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
@@ -32,6 +30,9 @@ public class MuteCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		boolean muteAll = false;
 		long tempTime = -1l;

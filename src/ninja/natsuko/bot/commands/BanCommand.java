@@ -27,6 +27,9 @@ public class BanCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+		}
 		int bandays = 1;
 		long tempTime = -1l;
 		boolean banAll = false;
@@ -109,7 +112,7 @@ public class BanCommand extends Command {
 					}
 					return;
 				}
-				
+				Utilities.reply(e.getMessage(), "That user didnt exist!");
 			}
 			List<Member> partialresult = ArgumentParser.toMemberByPartial(actualArgs.get(0), e.getGuild().block());	
 			if(partialresult.size() > 1 && !banAll) {
@@ -119,6 +122,7 @@ public class BanCommand extends Command {
 			}
 			if(partialresult.size() < 1) {
 				Utilities.reply(e.getMessage(), "No members matched! Check your input and try again!");
+				return;
 			}
 			StringBuilder output = new StringBuilder("");
 			for(Member target : partialresult) {
