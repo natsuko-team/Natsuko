@@ -37,6 +37,7 @@ public class ConfigCommand extends Command {
 			Utilities.reply(e.getMessage(), output.toString());
 			return;
 		case "set":
+			Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 			switch(aargs.get(1)) {
 			case "modrole":
 				if(Utilities.isNumbers(aargs.get(2))) {
@@ -45,7 +46,27 @@ public class ConfigCommand extends Command {
 						opts.put("modrole",modRole);
 					}
 				}
-				Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
+				
+				guild.put("options", opts);
+				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				return;
+			case "adminrole":
+				if(Utilities.isNumbers(aargs.get(2))) {
+					long modRole = Long.parseLong(aargs.get(2));
+					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
+						opts.put("mutedrole",modRole);
+					}
+				}
+				guild.put("options", opts);
+				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				return;
+			case "mutedrole":
+				if(Utilities.isNumbers(aargs.get(2))) {
+					long modRole = Long.parseLong(aargs.get(2));
+					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
+						opts.put("mutedrole",modRole);
+					}
+				}
 				guild.put("options", opts);
 				Main.db.getCollection("guilds").updateOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
 				return;
