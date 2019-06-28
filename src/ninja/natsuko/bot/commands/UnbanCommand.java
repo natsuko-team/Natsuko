@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
+import ninja.natsuko.bot.moderation.Case.CaseType;
+import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -42,7 +44,7 @@ public class UnbanCommand extends Command {
 					}
 					e.getGuild().block().unban(target.getId(),"");
 					
-					//TODO properly modlog it @lewistehminerz
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNBAN, 0, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Unbanned "+target.getUsername());
 						return;
@@ -67,7 +69,7 @@ public class UnbanCommand extends Command {
 					return;
 				}
 				e.getGuild().block().unban(target.getId());
-				//TODO modlog it properly
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNBAN, 0, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 					continue;
