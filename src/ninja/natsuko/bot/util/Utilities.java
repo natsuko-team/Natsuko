@@ -119,12 +119,12 @@ public class Utilities {
 	
 	public static boolean userIsStaff(User user) {
 		List<Member> members = Main.client.getGuildById(Snowflake.of(591720852891107328L)).block() // natsuko bot guild
-				.getMembers().collectList().block(); // get members
-
-		members.removeIf(m -> !m.getRoles().any(r -> r.getId() == Snowflake.of(593506464816168992L)).block()); // filter out people without staff role
-		members.removeIf(m -> !(m.getId() == user.getId())); // filter out every other user than the user we're looking for
+				.getMembers() //get members
+				.filter(m->m.getRoleIds().contains(Snowflake.of(593506464816168992L))) // only staff
+				.filter(m->m.getId() == user.getId()) // only user
+				.collectList().block(); // make it a list
 		
-		return members.size() == 1;
+		return members.size() == 1; // will only ever be 0 or 1
 	}
 
 	public static Document guildToFindDoc(Guild guild) {
