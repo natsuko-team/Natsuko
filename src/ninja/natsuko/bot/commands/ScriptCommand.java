@@ -60,7 +60,7 @@ public class ScriptCommand extends Command {
 					scripts.set(scriptToEdit, aargs.get(2));
 					guild.put("scripts", scripts);
 					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
-					Utilities.reply(e.getMessage(), "Edited script "+scriptToEdit+1);
+					Utilities.reply(e.getMessage(), "Edited script "+(scriptToEdit+1));
 					Main.modengine.get(e.getGuild().block().getId()).reload();
 					return;
 				}
@@ -74,7 +74,7 @@ public class ScriptCommand extends Command {
 					scripts.remove(scriptToEdit);
 					guild.put("scripts", scripts);
 					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guild);
-					Utilities.reply(e.getMessage(), "Deleted script "+scriptToEdit+1);
+					Utilities.reply(e.getMessage(), "Deleted script "+(scriptToEdit+1));
 					Main.modengine.get(e.getGuild().block().getId()).reload();
 				}
 			}
