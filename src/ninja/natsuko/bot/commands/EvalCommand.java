@@ -10,6 +10,7 @@ import javax.script.ScriptException;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import ninja.natsuko.bot.util.Utilities;
 
+@Invisible	
 public class EvalCommand extends Command {
 
 	public EvalCommand() {
