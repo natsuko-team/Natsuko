@@ -1,11 +1,12 @@
 package ninja.natsuko.bot.util;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
@@ -94,7 +95,7 @@ public class Utilities {
 		if(member.getBasePermissions().block().contains(Permission.MANAGE_MESSAGES)) return true;
 		if(member.getBasePermissions().block().contains(Permission.BAN_MEMBERS)) return true;
 		if(member.getBasePermissions().block().contains(Permission.KICK_MEMBERS)) return true;
-		Long modRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("")).first().getLong("modRole");
+		Long modRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("")).first().getLong("modrole");
 		if(modRole == null) {
 			return false;
 		}
@@ -106,7 +107,7 @@ public class Utilities {
 	
 	public static boolean userIsAdministrator(Member member) {
 		if(member.getBasePermissions().block().contains(Permission.ADMINISTRATOR) || member.getGuild().block().getOwner().block().equals(member)) return true;
-		Long adminRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("")).first().getLong("adminRole");
+		Long adminRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("")).first().getLong("adminrole");
 		if(adminRole == null) {
 			return false;
 		}
@@ -128,6 +129,13 @@ public class Utilities {
 
 	public static Document guildToFindDoc(Guild guild) {
 		return Document.parse("{\"_id\":"+guild.getId().asString()+"}");
+	}
+	
+	public static Document initGuild(Guild guild) {
+		Document guildoc = guildToFindDoc(guild);
+		guildoc.put("options", new HashMap<>());
+		guildoc.put("modlog", new ArrayList<>());
+		return guildoc;
 	}
 	
 	public static boolean isNumbers(String string) {
