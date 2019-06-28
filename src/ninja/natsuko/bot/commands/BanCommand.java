@@ -20,7 +20,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class BanCommand extends Command {
 
 	public BanCommand() {
-		super("ban", "Ban a user from the server");
+		super("ban", "Ban a user from the server. Usage: n;ban <Mention, ID or query> [-A/--allResults|-s/--silent|-t/-temp=\\d[m|h|d|w]|-d/--deleteDays] [reason]");
 	}
 
 	
@@ -37,7 +37,7 @@ public class BanCommand extends Command {
 		if(!e.getMember().isPresent()) return;
 		if(Utilities.userIsModerator(e.getMember().get())) {
 			for(String i : actualArgs) {
-				if(i.matches("^-d=\\d$")){
+				if(i.matches("^(?:-d|--deleteDays)=\\d$")){
 					try {
 						bandays = Integer.parseInt(i.split("-d=")[1]);
 					} catch(NumberFormatException ex) {
@@ -50,7 +50,7 @@ public class BanCommand extends Command {
 					continue;
 					
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					banAll = true;
 					continue;
 				}

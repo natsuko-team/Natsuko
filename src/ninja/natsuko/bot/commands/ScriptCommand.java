@@ -13,7 +13,8 @@ import ninja.natsuko.bot.util.Utilities;
 public class ScriptCommand extends Command {
 
 	public ScriptCommand() {
-		super("script", "Show, Add or Edit scripts on the moderation engine.");
+		super("script", "Show, Add or Edit scripts on the moderation engine. Usage: n;script <show|add|edit|delete> [id|if:add/script] [if:edit/script]"
+				+ "\nSee https://docs.natsuko.ninja/guides/scripting");
 	}
 
 	@Override

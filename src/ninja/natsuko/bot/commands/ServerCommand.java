@@ -2,7 +2,6 @@ package ninja.natsuko.bot.commands;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Locale;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -11,7 +10,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class ServerCommand extends Command {
 
 	public ServerCommand() {
-		super("server", "Displays information about the current server.");
+		super("server", "Displays information about the current server. Usage: n;server");
 	}
 
 	@Override

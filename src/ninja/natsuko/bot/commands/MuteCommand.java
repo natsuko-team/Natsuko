@@ -23,7 +23,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class MuteCommand extends Command {
 
 	public MuteCommand() {
-		super("mute", "Mute a user.");
+		super("mute", "Mute a user. Usage: n;mute <Mention, ID or query> [-A/--allResults|-s/--silent|-t/-temp=\\d[m|h|d|w]] [reason]");
 	}
 
 	
@@ -48,7 +48,7 @@ public class MuteCommand extends Command {
 					silent = true;
 					continue;
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					muteAll = true;
 					continue;
 				}

@@ -14,7 +14,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class EvalCommand extends Command {
 
 	public EvalCommand() {
-		super("eval", "Evaluate Nashorn code.");
+		super("eval", "Evaluate Nashorn code. Usage: n;eval <ecma5 js>");
 	}
 
 	@Override

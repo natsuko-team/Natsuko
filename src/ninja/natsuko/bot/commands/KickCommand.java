@@ -14,7 +14,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class KickCommand extends Command {
 
 	public KickCommand() {
-		super("kick", "Kick a user from the server");
+		super("kick", "Kick a user from the server. Usage: n;kick <Mention, ID or query> [-A/--allResults|-s/--silent] [reason]");
 	}
 
 	
@@ -33,7 +33,7 @@ public class KickCommand extends Command {
 					silent = true;
 					continue;
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					kickAll = true;
 					continue;
 				}

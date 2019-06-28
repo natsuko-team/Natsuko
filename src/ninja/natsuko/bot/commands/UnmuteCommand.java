@@ -18,7 +18,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class UnmuteCommand extends Command {
 
 	public UnmuteCommand() {
-		super("unmute", "Unmute a user.");
+		super("unmute", "Unmute a user. Usage: n;unmute <Mention, ID or query> [-A/--allResults|-s/--silent] [reason]");
 	}
 
 	
@@ -42,7 +42,7 @@ public class UnmuteCommand extends Command {
 					silent = true;
 					continue;
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					unmuteAll = true;
 					continue;
 				}

@@ -15,7 +15,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class ConfigCommand extends Command {
 
 	public ConfigCommand() {
-		super("config", "Configure Natsuko settings for your server.");
+		super("config", "Configure Natsuko settings for your server. Usage: n;config <show|set> [if:set/<option> <value>]");
 	}
 
 	@Override

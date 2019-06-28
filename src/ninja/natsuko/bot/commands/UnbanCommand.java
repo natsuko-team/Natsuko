@@ -14,7 +14,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class UnbanCommand extends Command {
 
 	public UnbanCommand() {
-		super("unban", "Unban a user from the server.");
+		super("unban", "Unban a user from the server. Usage: n;unban <ID or query> [-A/--allResults|-s/--silent] [reason]");
 	}
 
 	
@@ -33,7 +33,7 @@ public class UnbanCommand extends Command {
 					silent = true;
 					continue;
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					unbanAll = true;
 					continue;
 				}

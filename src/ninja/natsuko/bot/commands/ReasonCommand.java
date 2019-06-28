@@ -14,7 +14,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class ReasonCommand extends Command {
 
 	public ReasonCommand() {
-		super("reason","Update the reason of a modlog entry.");
+		super("reason","Update the reason of a modlog entry. Usage: n;reason <id> <reason>");
 	}
 
 	@Override

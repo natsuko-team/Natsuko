@@ -6,7 +6,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 public class TestCommand extends Command {
 
 	public TestCommand() {
-		super("test", "Testing the dynamic loader");
+		super("test", "Testing the dynamic loader.");
 	}
 
 	@Override

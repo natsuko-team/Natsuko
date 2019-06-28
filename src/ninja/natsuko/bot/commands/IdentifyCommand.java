@@ -9,7 +9,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class IdentifyCommand extends Command {
 
 	public IdentifyCommand() {
-		super("identify","Identify a user's ranking");
+		super("identify","Identify a user's ranking. Usage: n;identify <mention or id>");
 	}
 
 	@Override
