@@ -44,31 +44,39 @@ public class ConfigCommand extends Command {
 					long modRole = Long.parseLong(aargs.get(2));
 					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
 						opts.put("modrole",modRole);
+						guild.put("options", opts);
+						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+						Utilities.reply(e.getMessage(), "Set modrole to "+modRole);
+						return;
 					}
 				}
-				
-				guild.put("options", opts);
-				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
 				return;
 			case "adminrole":
 				if(Utilities.isNumbers(aargs.get(2))) {
 					long modRole = Long.parseLong(aargs.get(2));
 					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
-						opts.put("mutedrole",modRole);
+						opts.put("adminrole",modRole);
+						guild.put("options", opts);
+						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+						Utilities.reply(e.getMessage(), "Set adminrole to "+modRole);
+						return;
 					}
 				}
-				guild.put("options", opts);
-				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
 				return;
 			case "mutedrole":
 				if(Utilities.isNumbers(aargs.get(2))) {
 					long modRole = Long.parseLong(aargs.get(2));
 					if(e.getGuild().block().getRoleById(Snowflake.of(modRole)) == null) {
 						opts.put("mutedrole",modRole);
+						guild.put("options", opts);
+						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+						Utilities.reply(e.getMessage(), "Set mutedrole to "+modRole);
+						return;
 					}
 				}
-				guild.put("options", opts);
-				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
 				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
