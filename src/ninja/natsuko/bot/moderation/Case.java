@@ -149,11 +149,12 @@ public class Case {
 		String emoji = emojiForCase[0];
 		
 		// check if we can use the custom emoji
-		if (this.guild.getMemberById(Main.client.getSelfId().get()).block()
+		//disabled until we get custom emoji lol
+		/*if (this.guild.getMemberById(Main.client.getSelfId().get()).block()
 				.getBasePermissions().block().contains(Permission.USE_EXTERNAL_EMOJIS)
 				&& emojiForCase[1] != null) {
 			emoji = emojiForCase[1];
-		}
+		}*/
 		
 		String moderator = this.moderatorUser.getUsername() + "#" + this.moderatorUser.getDiscriminator();
 		
