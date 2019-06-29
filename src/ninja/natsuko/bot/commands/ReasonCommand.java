@@ -49,7 +49,7 @@ public class ReasonCommand extends Command {
 			m.setContent(new Case(Main.client.getUserById(Snowflake.of(theCase.get("targetUser").toString())).block(),Main.client.getUserById(Snowflake.of(theCase.get("moderatorUser").toString())).block(),Instant.ofEpochMilli(theCase.getLong("date")),CaseType.valueOf(theCase.get("type").toString().toUpperCase()),theCase.get("expiryDate")==null?null:Instant.ofEpochMilli(theCase.getLong("expiryDate")),theCase.get("reason").toString(),theCase.getInteger("id")).toModLog());
 		}).subscribe();
 		Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guildoc);
-		
+		Utilities.reply(e.getMessage(), "Updated case "+(i+1));
 	}
 
 }
