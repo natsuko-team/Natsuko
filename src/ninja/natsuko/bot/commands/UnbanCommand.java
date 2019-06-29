@@ -83,7 +83,7 @@ public class UnbanCommand extends Command {
 				} else reason = "[no reason specified]";
 				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNBAN, 0, e.getGuild().block()));
 				if(!silent) {
-					output.append(e.getMember().get().getMention() + " Unmuted "+target.getUsername());
+					output.append(e.getMember().get().getMention() + " Unbanned "+target.getUsername());
 					continue;
 				}
 			}
