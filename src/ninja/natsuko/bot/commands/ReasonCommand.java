@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.bson.Document;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.util.Snowflake;

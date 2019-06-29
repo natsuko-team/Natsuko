@@ -12,8 +12,8 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
 import ninja.natsuko.bot.Main;
-import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.moderation.Case.CaseType;
+import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
