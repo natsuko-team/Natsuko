@@ -129,7 +129,7 @@ public class UnstrikeCommand extends Command {
 				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guildoc);
 				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNSTRIKE, 1, e.getGuild().block()));
 				if(!silent) {
-					output.append(e.getMember().get().getMention() + " Struck "+target.getUsername()+"\n");
+					output.append(e.getMember().get().getMention() + " Unstruck "+target.getUsername()+"\n");
 					continue;
 				}
 			}
