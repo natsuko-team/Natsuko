@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.ini4j.Wini;
@@ -196,14 +199,33 @@ public class Main {
 		try {
 			if(!event.getMember().isPresent()) return;
 			
+			Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(event.getGuild().block())).first().get("options", new HashMap<>());
 			if(messagesLastSecond.get(event.getMember().get().getId())>=3) {
-				event.getMessage().delete().subscribe();
-				exceededAntispamLimit.put(event.getMember().get().getId(),exceededAntispamLimit.getOrDefault(event.getMember().get().getId(),0)+1);
-				if(exceededAntispamLimit.get(event.getMember().get().getId())>3) {
-					
+				if(opts.getOrDefault("automod.antispam","on").toString().equals("on")) {
+					event.getMessage().delete().subscribe();
+					exceededAntispamLimit.put(event.getMember().get().getId(),exceededAntispamLimit.getOrDefault(event.getMember().get().getId(),0)+1);
+					if(exceededAntispamLimit.get(event.getMember().get().getId())>3) {
+						Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(event.getGuild().block())).first();
+						List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
+						Document userStrikes = strikes.stream().filter(a->a.getLong("id") == event.getMember().get().getId().asLong()).collect(Collectors.toList()).get(0);
+						if(userStrikes == null) {
+							userStrikes = Document.parse("{\"id\":"+event.getMember().get().getId().asLong()+",\"strikes\":1}");
+							strikes.add(userStrikes);
+						}
+						else {
+							int i = strikes.indexOf(userStrikes);
+							userStrikes.put("strikes", userStrikes.getInteger("strikes")+1);
+							strikes.set(i, userStrikes);
+						}
+						guildoc.put("strikes", strikes);
+						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(event.getGuild().block()), guildoc);
+						Utilities.processStrike(event.getMember().get(),userStrikes.getInteger("strikes"));
+						ModLogger.logCase(event.getGuild().block(), ModLogger.newCase(event.getMember().get(), event.getMember().get(), "Natsuko auto-strike for antispam", null, CaseType.STRIKE, 1, event.getGuild().block()));
+					}
+					return;
 				}
-				return;
 			}
+			messagesLastSecond.put(event.getMember().get().getId(), messagesLastSecond.get(event.getMember().get().getId())+1);
 			
 			String msg;
 			if (event.getMessage().getContent().isPresent()) {
@@ -212,6 +234,11 @@ public class Main {
 				return;
 			}
 			
+			/*if(opts.getOrDefault("automod.anticopypasta","on").toString().equals("on")) {
+				if(event.getMessage().getContent().get().matches("")) {
+					
+				}
+			}*/ //disabled for now, no database of copypastaes
 			
 			// commands area
 			
