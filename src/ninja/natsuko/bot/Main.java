@@ -22,9 +22,11 @@ import ch.qos.logback.classic.Logger;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.commands.Command;
 import ninja.natsuko.bot.moderation.Case.CaseType;
@@ -38,11 +40,61 @@ public class Main {
 	public static DiscordClient client;
 	public static Map<Snowflake,ScriptRunner> modengine = new HashMap<>();
 	public static Thread timedEventThread;
+	public static Thread uniqueResetThread;
+	public static Thread messageResetThread;
+	public static Thread resetAntispam;
+
 	
 	static String inst = "null";
+	static Map<Snowflake,Map<Snowflake,Integer>> uniqueServersJoined = new HashMap<>();
+	static Map<Snowflake,Integer> messagesLastSecond = new HashMap<>();
+	static Map<Snowflake,Integer> exceededAntispamLimit = new HashMap<>();
+	
 	public static void main(String[] args) {
 		Logger root = (Logger)LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 		root.setLevel(Level.INFO);
+		uniqueResetThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(true) {
+					try {
+						Thread.sleep(86400000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					uniqueServersJoined.clear();
+				}
+			}
+		});
+		uniqueResetThread.start();
+		messageResetThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(true) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					messagesLastSecond.clear();
+				}
+			}
+		});
+		messageResetThread.start();
+		resetAntispam = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(true) {
+					try {
+						Thread.sleep(60000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					exceededAntispamLimit.clear();
+				}
+			}
+		});
+		resetAntispam.start();
 		timedEventThread = new Thread(new Runnable() {
 
 			@Override
@@ -117,6 +169,21 @@ public class Main {
 					//TODO fuck botfarms
 				}
 			});
+			client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(event->{
+				if(event.getMember().getUsername().matches("(discord.gg|twitter.com|discordapp.com|dis.gd)")) {
+					event.getMember().ban(a->{a.setReason("Natsuko autoban for: BadURL in username");a.setDeleteMessageDays(1);});
+					Utilities.sendMessage((TextChannel)client.getChannelById(Snowflake.of(591729986465955866l)).block(), "NOTICE: User with BadURL in name: "+event.getMember().getId().asString()+" "+event.getMember().getUsername());
+				}
+				Map<Snowflake, Integer> temp = uniqueServersJoined.getOrDefault(event.getMember().getId(), new HashMap<>());
+				temp.put(event.getGuildId(), temp.getOrDefault(event.getGuildId(), 0)+1);
+				uniqueServersJoined.put(event.getMember().getId(), temp);
+				if(temp.size()==10||temp.size()%20==0) {
+					Utilities.sendMessage((TextChannel)client.getChannelById(Snowflake.of(591729986465955866l)).block(), "NOTICE: User with suspicious behavior: "+event.getMember().getId().asString()+" Has joined "+temp.size()+" unique servers in the last 24 hours.");
+				}
+				if(temp.get(event.getGuildId())==5||temp.get(event.getGuildId())%10==0) {
+					Utilities.sendMessage((TextChannel)client.getChannelById(Snowflake.of(591729986465955866l)).block(), "NOTICE: User with suspicious behavior: "+event.getMember().getId().asString()+" Has joined a server ("+event.getGuildId().asString()+") "+temp.get(event.getGuildId())+" times in the last 24 hours.");
+				}
+			});
 			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Main::processCommand);
 			client.login().block();
 		} catch (IOException e) {
@@ -126,6 +193,17 @@ public class Main {
 
 	private static void processCommand(MessageCreateEvent event) {
 		try {
+			if(!event.getMember().isPresent()) return;
+			
+			if(messagesLastSecond.get(event.getMember().get().getId())>=3) {
+				event.getMessage().delete().subscribe();
+				exceededAntispamLimit.put(event.getMember().get().getId(),exceededAntispamLimit.getOrDefault(event.getMember().get().getId(),0)+1);
+				if(exceededAntispamLimit.get(event.getMember().get().getId())>3) {
+					
+				}
+				return;
+			}
+			
 			String msg;
 			if (event.getMessage().getContent().isPresent()) {
 				msg = event.getMessage().getContent().get();
