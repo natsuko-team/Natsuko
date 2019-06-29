@@ -80,6 +80,7 @@ public class StrikeCommand extends Command {
 					}
 					guildoc.put("strikes", strikes);
 					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guildoc);
+					Utilities.processStrike(target,userStrikes.getInteger("strikes"));
 					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.STRIKE, 1, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Struck "+target.getUsername());
@@ -134,6 +135,7 @@ public class StrikeCommand extends Command {
 				}
 				guildoc.put("strikes", strikes);
 				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guildoc);
+				Utilities.processStrike(target,userStrikes.getInteger("strikes"));
 				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.STRIKE, 1, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Struck "+target.getUsername()+"\n");

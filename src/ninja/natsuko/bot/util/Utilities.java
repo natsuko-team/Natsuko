@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,8 @@ import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.MessageCreateSpec;
 import ninja.natsuko.bot.Main;
+import ninja.natsuko.bot.moderation.ModLogger;
+import ninja.natsuko.bot.moderation.Case.CaseType;
 
 public class Utilities {
 	public static String longMilisToTime(long ms) {
@@ -141,5 +144,20 @@ public class Utilities {
 	
 	public static boolean isNumbers(String string) {
 		return string.matches("^\\d*$");
+	}
+
+	public static void processStrike(Member target, Integer strikes) {
+		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(target.getGuild().block())).first().get("options", new HashMap<>());
+		if(strikes >= (Integer)opts.getOrDefault("strikes.banThreshold", 3)){
+			target.ban(b->{
+				b.setReason("Natsuko auto-ban for exceeding strike threshold");
+				b.setDeleteMessageDays(1);
+			}).subscribe();
+			ModLogger.logCase(target.getGuild().block(), ModLogger.newCase(target, Main.client.getSelf().block(), "Natsuko auto-ban for exceeding strike threshold.", null, CaseType.BAN, 0, target.getGuild().block()));
+		}
+		if(strikes >= (Integer)opts.getOrDefault("strikes.kickThreshold", 2)){
+			target.kick("Natsuko auto-kick for exceeding strike threshold.").subscribe();
+			ModLogger.logCase(target.getGuild().block(), ModLogger.newCase(target, Main.client.getSelf().block(), "Natsuko auto-kick for exceeding strike threshold.", null, CaseType.KICK, 0, target.getGuild().block()));
+		}
 	}
 }
