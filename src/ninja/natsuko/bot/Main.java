@@ -25,6 +25,7 @@ import ch.qos.logback.classic.Logger;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -166,14 +167,19 @@ public class Main {
 			client = builder.build();	
 			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> {
 				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
-				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getGuilds().size()+" servers | n;help")));
+				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getGuilds().size()+" servers | n;help"))).block();
 				return;
 			});	
 			client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(event->{
+				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getClient().getGuilds().count().block()+" servers | n;help"))).block();
 				if(event.getGuild().getJoinTime().get().isAfter(Instant.now().minusMillis(1000l))) {
+					
 					Main.db.getCollection("guilds").insertOne(Utilities.initGuild(event.getGuild()));
 					//TODO fuck botfarms
 				}
+			});
+			client.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(event->{
+				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getClient().getGuilds().count().block()+" servers | n;help"))).block();
 			});
 			client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(event->{
 				if(event.getMember().getUsername().matches("(discord.gg|twitter.com|discordapp.com|dis.gd)")) {

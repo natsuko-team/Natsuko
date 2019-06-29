@@ -17,7 +17,7 @@ public class ExitCommand extends Command {
 			Utilities.reply(e.getMessage(), "You arent staff. GTFO.");
 			return;
 		}
-		e.getClient().updatePresence(Presence.invisible());
+		e.getClient().updatePresence(Presence.invisible()).block();
 		System.exit(0);
 	}
 
