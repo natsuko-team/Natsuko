@@ -172,6 +172,7 @@ public class Main {
 			client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(event->{
 				if(event.getMember().getUsername().matches("(discord.gg|twitter.com|discordapp.com|dis.gd)")) {
 					event.getMember().ban(a->{a.setReason("Natsuko autoban for: BadURL in username");a.setDeleteMessageDays(1);});
+					ModLogger.logCase(event.getGuild().block(), ModLogger.newCase(event.getMember(), client.getSelf().block(), "Natsuko auto-ban for BadURL in username.", null, CaseType.BAN, 0, event.getGuild().block()));
 					Utilities.sendMessage((TextChannel)client.getChannelById(Snowflake.of(591729986465955866l)).block(), "NOTICE: User with BadURL in name: "+event.getMember().getId().asString()+" "+event.getMember().getUsername());
 				}
 				Map<Snowflake, Integer> temp = uniqueServersJoined.getOrDefault(event.getMember().getId(), new HashMap<>());
