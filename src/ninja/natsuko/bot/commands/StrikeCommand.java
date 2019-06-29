@@ -71,14 +71,10 @@ public class StrikeCommand extends Command {
 					List<Document> temp = strikes.stream().filter(a->a.getLong("id") == target.getId().asLong()).collect(Collectors.toList());
 					Document userStrikes;
 					if(temp.size() < 1) {
-						userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
-					} else
-					userStrikes = temp.get(0);
-					if(userStrikes == null) {
 						userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":1}");
 						strikes.add(userStrikes);
-					}
-					else {
+					} else {
+						userStrikes = temp.get(0);
 						int i = strikes.indexOf(userStrikes);
 						userStrikes.put("strikes", userStrikes.getInteger("strikes")+1);
 						strikes.set(i, userStrikes);
