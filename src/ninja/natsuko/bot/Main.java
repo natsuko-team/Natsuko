@@ -200,7 +200,7 @@ public class Main {
 			if(!event.getMember().isPresent()) return;
 			
 			Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(event.getGuild().block())).first().get("options", new HashMap<>());
-			if(messagesLastSecond.get(event.getMember().get().getId())>=3) {
+			if(messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)>=3) {
 				if(opts.getOrDefault("automod.antispam","on").toString().equals("on")) {
 					event.getMessage().delete().subscribe();
 					exceededAntispamLimit.put(event.getMember().get().getId(),exceededAntispamLimit.getOrDefault(event.getMember().get().getId(),0)+1);
