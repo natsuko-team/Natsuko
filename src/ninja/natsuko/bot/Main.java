@@ -30,6 +30,8 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.presence.Activity;
+import discord4j.core.object.presence.Presence;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.commands.Command;
 import ninja.natsuko.bot.moderation.Case.CaseType;
@@ -164,6 +166,7 @@ public class Main {
 			client = builder.build();	
 			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> {
 				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
+				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getGuilds().size()+" servers | n;help")));
 				return;
 			});	
 			client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(event->{
