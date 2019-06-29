@@ -114,7 +114,7 @@ public class Utilities {
 	
 	public static boolean userIsAdministrator(Member member) {
 		if(member.getBasePermissions().block().contains(Permission.ADMINISTRATOR) || member.getGuild().block().getOwner().block().equals(member)) return true;
-		Long adminRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("")).first().getLong("adminrole");
+		Long adminRole = Main.db.getCollection("guilds").find(Document.parse("{\"id\":"+member.getGuild().block().getId().asString()+"}")).first().getLong("adminrole");
 		if(adminRole == null) {
 			return false;
 		}
