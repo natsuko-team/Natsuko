@@ -15,7 +15,8 @@ import ninja.natsuko.bot.util.Utilities;
 public class ConfigCommand extends Command {
 
 	public ConfigCommand() {
-		super("config", "Configure Natsuko settings for your server. Usage: n;config <show|set> [if:set/<option> <value>]");
+		super("config", "Configure Natsuko settings for your server. Usage: n;config <show|set> [if:set/<option> <value>]\n"
+				+ "See https://docs.natsuko.ninja/guides/getting-started#configuration");
 	}
 
 	@Override
@@ -97,6 +98,43 @@ public class ConfigCommand extends Command {
 					}
 				}
 				Utilities.reply(e.getMessage(), "Invalid value! Expected: Channel got:"+aargs.get(2).replaceAll("[<@&>]", ""));
+				return;
+			case "strikes.kickthreshold":
+				if(Utilities.isNumbers(aargs.get(2))) {
+					Integer thresh = ArgumentParser.toInt(aargs.get(2));
+					opts.put("strikes.kickthreshold",thresh);
+					guild.put("options", opts);
+					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+					Utilities.reply(e.getMessage(), "Set Kick Threshold to "+thresh+"");
+					return;
+				}
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: Integer got:"+aargs.get(2));
+				return;
+			case "strikes.banthreshold":
+				if(Utilities.isNumbers(aargs.get(2))) {
+					Integer thresh = ArgumentParser.toInt(aargs.get(2));
+					opts.put("strikes.banthreshold",thresh);
+					guild.put("options", opts);
+					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+					Utilities.reply(e.getMessage(), "Set Ban Threshold to "+thresh+"");
+					return;
+				}
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: Integer got:"+aargs.get(2));
+				return;
+			case "strikes.bantime":
+				if(Utilities.isNumbers(aargs.get(2))) {
+					String time = aargs.get(2);
+					if(!time.matches("^(?:-t|--temp)=-?(\\d+)(m|h|d|w)$")) {
+						Utilities.reply(e.getMessage(), "Invalid value! Expected: Time got:"+aargs.get(2));
+						return;
+					}
+					opts.put("strikes.bantime",time);
+					guild.put("options", opts);
+					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+					Utilities.reply(e.getMessage(), "Set Ban Time to "+time);
+					return;
+				}
+				Utilities.reply(e.getMessage(), "Invalid value! Expected: Time got:"+aargs.get(2));
 				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
