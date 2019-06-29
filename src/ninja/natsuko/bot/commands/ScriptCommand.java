@@ -13,13 +13,18 @@ import ninja.natsuko.bot.util.Utilities;
 public class ScriptCommand extends Command {
 
 	public ScriptCommand() {
-		super("script", "Show, Add or Edit scripts on the moderation engine.");
+		super("script", "Show, Add or Edit scripts on the moderation engine. Usage: n;script <show|add|edit|delete> [id|if:add/script] [if:edit/script]"
+				+ "\nSee https://docs.natsuko.ninja/guides/scripting");
 	}
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsAdministrator(e.getMember().get())) return;
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
+		if(aargs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+			return;
+		}
 		Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 		List<String> scripts = guild.get("scripts",new ArrayList<>());
 		if(aargs.size() < 1) return;

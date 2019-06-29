@@ -14,13 +14,17 @@ import ninja.natsuko.bot.util.Utilities;
 public class UnbanCommand extends Command {
 
 	public UnbanCommand() {
-		super("unban", "Unban a user from the server.");
+		super("unban", "Unban a user from the server. Usage: n;unban <ID or query> [-A/--allResults|-s/--silent] [reason]");
 	}
 
 	
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+			return;
+		}
 		boolean unbanAll = false;
 		boolean silent = false;
 		if(!e.getMember().isPresent()) return;
@@ -30,7 +34,7 @@ public class UnbanCommand extends Command {
 					silent = true;
 					continue;
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					unbanAll = true;
 					continue;
 				}
@@ -42,9 +46,13 @@ public class UnbanCommand extends Command {
 						Utilities.reply(e.getMessage(), "I don't have permissions to unban!");	
 						return;
 					}
-					e.getGuild().block().unban(target.getId(),"");
+					e.getGuild().block().unban(target.getId(),"").subscribe();
 					
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNBAN, 0, e.getGuild().block()));
+					String reason = String.join(" ", args);
+					if(reason.split(args[0]).length > 1) {
+						reason = reason.split(args[0])[1];
+					} else reason = "[no reason specified]";
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNBAN, 0, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Unbanned "+target.getUsername());
 						return;
@@ -66,12 +74,16 @@ public class UnbanCommand extends Command {
 			for(User target : partialresult) {
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
 					output.append("I don't have permissions to Unban!");	
-					return;
+					break;
 				}
-				e.getGuild().block().unban(target.getId());
-				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNBAN, 0, e.getGuild().block()));
+				e.getGuild().block().unban(target.getId()).subscribe();
+				String reason = String.join(" ", args);
+				if(reason.split(args[0]).length > 1) {
+					reason = reason.split(args[0])[1];
+				} else reason = "[no reason specified]";
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNBAN, 0, e.getGuild().block()));
 				if(!silent) {
-					output.append(e.getMember().get().getMention() + " Unmuted "+target.getUsername());
+					output.append(e.getMember().get().getMention() + " Unbanned "+target.getUsername());
 					continue;
 				}
 			}

@@ -1,11 +1,11 @@
 package ninja.natsuko.bot.moderation;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +13,6 @@ import org.bson.Document;
 
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Permission;
-import ninja.natsuko.bot.Main;
 
 public class Case {
 
@@ -129,6 +127,7 @@ public class Case {
 		out.put("type", this.type.toString().toLowerCase());
 		out.put("expiryDate", this.expiryDate);
 		out.put("reason", this.reason);
+		out.put("id", this.id);
 		if(this.strikes == -1) out.put("strikes", this.strikes);
 		return out;
 	}
@@ -148,11 +147,12 @@ public class Case {
 		String emoji = emojiForCase[0];
 		
 		// check if we can use the custom emoji
-		if (this.guild.getMemberById(Main.client.getSelfId().get()).block()
+		//disabled until we get custom emoji lol
+		/*if (this.guild.getMemberById(Main.client.getSelfId().get()).block()
 				.getBasePermissions().block().contains(Permission.USE_EXTERNAL_EMOJIS)
 				&& emojiForCase[1] != null) {
 			emoji = emojiForCase[1];
-		}
+		}*/
 		
 		String moderator = this.moderatorUser.getUsername() + "#" + this.moderatorUser.getDiscriminator();
 		
@@ -200,7 +200,7 @@ public class Case {
 		String temporary = "\n`[  %s ]` %s";
 		String finalStr = String.format(formatBase, time, emoji,
 				moderator, this.moderatorUser.getId().asString(), action, target,
-				this.targetUser.getId().asString(), "Reason", this.reason);
+				this.targetUser.getId().asString(), this.reason);
 		
 		if (this.type == CaseType.TEMPBAN || this.type == CaseType.TEMPMUTE) {
 			finalStr += String.format(temporary, "Expires",

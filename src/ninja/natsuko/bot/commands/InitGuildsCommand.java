@@ -13,7 +13,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class InitGuildsCommand extends Command {
 
 	public InitGuildsCommand() {
-		super("initguilds", "Initialize all uninitialized guilds");
+		super("initguilds", "Initialize all uninitialized guilds. Usage: n;initguilds");
 	}
 
 	@Override
