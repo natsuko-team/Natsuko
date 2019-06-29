@@ -155,26 +155,29 @@ public class Utilities {
 			Matcher m = Pattern.compile("^(?:-t|--temp)=(\\d+)(m|h|d|w)$",Pattern.CASE_INSENSITIVE).matcher(opts.getOrDefault("strikes.bantime", "0m").toString());
 			boolean permanent = true;
 			if(!opts.getOrDefault("strikes.bantime", "0m").toString().equals("0m")) permanent = false;
+			long tempTime = 0l;
 			if(!m.find()) permanent = true;
-			long time = Long.parseLong(m.group(1));
-			String unit = m.group(2).toLowerCase();
-			switch(unit) {
-			case "m":
-				time = time*60*1000;
-				break;
-			case "h":
-				time = time*60*60*1000;
-				break;
-			case "d":
-				time = time*24*60*60*1000;
-				break;
-			case "w":
-				time = time*7*24*60*60*1000;
-				break;
-			default:
-				break;
+			else {
+				long time = Long.parseLong(m.group(1));
+				String unit = m.group(2).toLowerCase();
+				switch(unit) {
+				case "m":
+					time = time*60*1000;
+					break;
+				case "h":
+					time = time*60*60*1000;
+					break;
+				case "d":
+					time = time*24*60*60*1000;
+					break;
+				case "w":
+					time = time*7*24*60*60*1000;
+					break;
+				default:
+					break;
+				}
+				tempTime = Instant.now().plusMillis(time).toEpochMilli();
 			}
-			long tempTime = Instant.now().plusMillis(time).toEpochMilli();
 			target.ban(b->{
 				b.setReason("Natsuko auto-ban for exceeding strike threshold");
 				b.setDeleteMessageDays(1);
