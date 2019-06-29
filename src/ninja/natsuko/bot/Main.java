@@ -27,6 +27,8 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.commands.Command;
+import ninja.natsuko.bot.moderation.ModLogger;
+import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.scriptengine.ScriptRunner;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -58,6 +60,7 @@ public class Main {
 							switch(i.getString("type")) {
 							case "unban":
 								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+i.getLong("due")+"ms").subscribe();
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unban after "+i.getLong("due")+"ms", null, CaseType.UNBAN, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
 								db.getCollection("timed").deleteOne(i);
 								break;
 							case "unmute":
@@ -66,6 +69,7 @@ public class Main {
 								roleId = Long.parseLong(opts.get("mutedrole").toString());
 								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().getMemberById(Snowflake.of(i.getString("target"))).block().removeRole(
 										Snowflake.of(roleId), "Natsuko auto-unmute after "+i.getLong("due")+"ms").subscribe();
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unmute after "+i.getLong("due")+"ms", null, CaseType.UNMUTE, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
 								db.getCollection("timed").deleteOne(i);
 								root.info("Unmuted a user", i);
 								break;
