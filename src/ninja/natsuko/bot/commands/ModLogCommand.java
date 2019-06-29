@@ -39,7 +39,7 @@ public class ModLogCommand extends Command {
 				return;
 			}
 			Document entry = modlog.get(ArgumentParser.toInt(args[1]));
-			Utilities.reply(e.getMessage(), new Case(Main.client.getUserById(Snowflake.of(entry.get("targetUser").toString())).block(),Main.client.getUserById(Snowflake.of(entry.get("moderatorUser").toString())).block(),Instant.ofEpochMilli(entry.getLong("date")),CaseType.valueOf(entry.get("type").toString()),entry.get("expiryDate")==null?null:Instant.ofEpochMilli(entry.getLong("expiryDate")),entry.get("reason").toString(),entry.getInteger("id")).toModLog());
+			Utilities.reply(e.getMessage(), new Case(Main.client.getUserById(Snowflake.of(entry.get("targetUser").toString())).block(),Main.client.getUserById(Snowflake.of(entry.get("moderatorUser").toString())).block(),Instant.ofEpochMilli(entry.getLong("date")),CaseType.valueOf(entry.get("type").toString().toUpperCase()),entry.get("expiryDate")==null?null:Instant.ofEpochMilli(entry.getLong("expiryDate")),entry.get("reason").toString(),entry.getInteger("id")).toModLog());
 			break;
 		case "count":
 			Utilities.reply(e.getMessage(), "Modlog entries stored: "+modlog.size());

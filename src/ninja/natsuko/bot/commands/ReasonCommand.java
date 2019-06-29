@@ -42,7 +42,7 @@ public class ReasonCommand extends Command {
 		TextChannel chan = (TextChannel) e.getClient().getChannelById(Snowflake.of((long) opts.get("modlog"))).block();
 		Message mesg = chan.getMessageById(Snowflake.of(theCase.getLong("msgid"))).block();
 		mesg.edit(m->{
-			m.setContent(new Case(Main.client.getUserById(Snowflake.of(theCase.get("targetUser").toString())).block(),Main.client.getUserById(Snowflake.of(theCase.get("moderatorUser").toString())).block(),Instant.ofEpochMilli(theCase.getLong("date")),CaseType.valueOf(theCase.get("type").toString()),theCase.get("expiryDate")==null?null:Instant.ofEpochMilli(theCase.getLong("expiryDate")),theCase.get("reason").toString(),theCase.getInteger("id")).toModLog());
+			m.setContent(new Case(Main.client.getUserById(Snowflake.of(theCase.get("targetUser").toString())).block(),Main.client.getUserById(Snowflake.of(theCase.get("moderatorUser").toString())).block(),Instant.ofEpochMilli(theCase.getLong("date")),CaseType.valueOf(theCase.get("type").toString().toUpperCase()),theCase.get("expiryDate")==null?null:Instant.ofEpochMilli(theCase.getLong("expiryDate")),theCase.get("reason").toString(),theCase.getInteger("id")).toModLog());
 		}).subscribe();
 		int i = modlog.indexOf(theCase);
 		theCase.put("reason",String.join(" ", args).substring(args[0].length()+1));
