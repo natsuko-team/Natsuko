@@ -38,7 +38,7 @@ public class ConfigCommand extends Command {
 			StringBuilder output = new StringBuilder("Config Options:```\n");
 			
 			for(String i : opts.keySet()) {
-				output.append(i+": "+opts.get(i));
+				output.append(i+": "+opts.get(i)+"\n");
 			}
 			output.append("\n```");
 			Utilities.reply(e.getMessage(), output.toString());
