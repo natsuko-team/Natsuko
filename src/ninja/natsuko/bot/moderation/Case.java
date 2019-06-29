@@ -198,11 +198,11 @@ public class Case {
 		
 		String target = this.targetUser.getUsername() + "#" + this.targetUser.getDiscriminator();
 		
-		String formatBase = "`[ %s ]` %s (`%s`) %s %s (`%s`)\n`[  %s  ]` %s";
+		String formatBase = "`[ %s ]` %s (`%s`) %s %s (`%s`)\n`[  %s  ]` Reason: %s";
 		String temporary = "\n`[  %s ]` %s";
 		String finalStr = String.format(formatBase, time, emoji,
 				moderator, this.moderatorUser.getId().asString(), action, target,
-				this.targetUser.getId().asString(), "Reason", this.reason);
+				this.targetUser.getId().asString(), this.reason);
 		
 		if (this.type == CaseType.TEMPBAN || this.type == CaseType.TEMPMUTE) {
 			finalStr += String.format(temporary, "Expires",
