@@ -46,8 +46,26 @@ public class ModLogCommand extends Command {
 			return;
 		case "wipe":
 			Double wipeKey = Math.random();
-			wipeKeys.put(e.getGuild().block().getId(),wipeKey);
+			this.wipeKeys.put(e.getGuild().block().getId(),wipeKey);
 			Utilities.reply(e.getMessage(), ":warning: This operation is IRREVERSIBLE. Please run n;modlog confirmwipe "+wipeKey+" to continue. :warning: ");
+			break;
+		case "confirmwipe":
+			if(args.length < 2) {
+				Utilities.reply(e.getMessage(), this.description);
+				return;
+			}
+			if(Utilities.isNumbers(args[1])) {
+				if(ArgumentParser.toDouble(args[1]) == this.wipeKeys.get(e.getGuild().block().getId())) {
+					guildoc.put("modlog",new ArrayList<Document>());
+					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guildoc);
+					Utilities.reply(e.getMessage(), "Modlog has been wiped and is no longer recoverable.\n"
+							+ "Modlog messages may still exist in the modlog channel, they are now invalidated.");
+				} else {
+					Utilities.reply(e.getMessage(), this.description);
+					return;
+				}
+			}
+			break;
 		default:
 			Utilities.reply(e.getMessage(), this.description);
 			return;
