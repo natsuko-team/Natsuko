@@ -136,6 +136,15 @@ public class ConfigCommand extends Command {
 				}
 				Utilities.reply(e.getMessage(), "Invalid value! Expected: Time got:"+aargs.get(2));
 				return;
+			case "automod.antispam":
+				if(!aargs.get(2).matches("on|off")) {
+					Utilities.reply(e.getMessage(), "Invalid value! Expected: on/off got:"+aargs.get(2));
+				}
+				opts.put("strikes.banthreshold",aargs.get(2));
+				guild.put("options", opts);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Utilities.reply(e.getMessage(), "Set antispam to "+aargs.get(2));
+				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
 				return;
