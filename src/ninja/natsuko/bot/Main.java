@@ -225,7 +225,7 @@ public class Main {
 					return;
 				}
 			}
-			messagesLastSecond.put(event.getMember().get().getId(), messagesLastSecond.get(event.getMember().get().getId())+1);
+			messagesLastSecond.put(event.getMember().get().getId(), messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)+1);
 			
 			String msg;
 			if (event.getMessage().getContent().isPresent()) {
