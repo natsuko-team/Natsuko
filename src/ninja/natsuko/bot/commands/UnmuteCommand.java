@@ -18,13 +18,16 @@ import ninja.natsuko.bot.util.Utilities;
 public class UnmuteCommand extends Command {
 
 	public UnmuteCommand() {
-		super("unmute", "Unmute a user.");
+		super("unmute", "Unmute a user. Usage: n;unmute <Mention, ID or query> [-A/--allResults|-s/--silent] [reason]");
 	}
 
 	
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		boolean unmuteAll = false;
 		boolean silent = false;
@@ -39,7 +42,7 @@ public class UnmuteCommand extends Command {
 					silent = true;
 					continue;
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					unmuteAll = true;
 					continue;
 				}
@@ -59,8 +62,12 @@ public class UnmuteCommand extends Command {
 						Utilities.reply(e.getMessage(), "I don't have permissions to manage roles!");	
 						return;
 					}
-					target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNMUTE, 0, e.getGuild().block()));
+					target.removeRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
+					String reason = String.join(" ", args);
+					if(reason.split(args[0]).length > 1) {
+						reason = reason.split(args[0])[1];
+					} else reason = "[no reason specified]";
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNMUTE, 0, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 						return;
@@ -90,10 +97,14 @@ public class UnmuteCommand extends Command {
 				}
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
 					output.append("I don't have permissions to manage roles!");	
-					return;
+					break;
 				}
-				target.removeRole(Snowflake.of(opts.get("mutedrole").toString()));
-				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.UNMUTE, 0, e.getGuild().block()));
+				target.removeRole(Snowflake.of(opts.get("mutedrole").toString())).subscribe();
+				String reason = String.join(" ", args);
+				if(reason.split(args[0]).length > 1) {
+					reason = reason.split(args[0])[1];
+				} else reason = "[no reason specified]";
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNMUTE, 0, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Unmuted "+target.getUsername());
 					continue;

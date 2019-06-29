@@ -14,13 +14,17 @@ import ninja.natsuko.bot.util.Utilities;
 public class KickCommand extends Command {
 
 	public KickCommand() {
-		super("kick", "Kick a user from the server");
+		super("kick", "Kick a user from the server. Usage: n;kick <Mention, ID or query> [-A/--allResults|-s/--silent] [reason]");
 	}
 
 	
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+			return;
+		}
 		boolean kickAll = false;
 		boolean silent = false;
 		if(!e.getMember().isPresent()) return;
@@ -30,7 +34,7 @@ public class KickCommand extends Command {
 					silent = true;
 					continue;
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					kickAll = true;
 					continue;
 				}
@@ -46,8 +50,12 @@ public class KickCommand extends Command {
 						Utilities.reply(e.getMessage(), "That user is above the bot!");
 						return;
 					}
-					target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.KICK, 0, e.getGuild().block()));
+					String reason = String.join(" ", args);
+					if(reason.split(args[0]).length > 1) {
+						reason = reason.split(args[0])[1];
+					} else reason = "[no reason specified]";
+					target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+reason).subscribe();
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.KICK, 0, e.getGuild().block()));
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
 						return;
@@ -77,10 +85,14 @@ public class KickCommand extends Command {
 				}
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 					output.append("I don't have permissions to ban!\n");	
-					return;
+					break;
 				}
-				target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1)).subscribe();
-				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.KICK, 0, e.getGuild().block()));
+				String reason = String.join(" ", args);
+				if(reason.split(args[0]).length > 1) {
+					reason = reason.split(args[0])[1];
+				} else reason = "[no reason specified]";
+				target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+reason).subscribe();
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.KICK, 0, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Kicked "+target.getUsername()+"\n");
 					continue;

@@ -20,13 +20,17 @@ import ninja.natsuko.bot.util.Utilities;
 public class BanCommand extends Command {
 
 	public BanCommand() {
-		super("ban", "Ban a user from the server");
+		super("ban", "Ban a user from the server. Usage: n;ban <Mention, ID or query> [-A/--allResults|-s/--silent|-t/-temp=\\d[m|h|d|w]|-d/--deleteDays] [reason]");
 	}
 
 	
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
+		if(actualArgs.size() == 0) {
+			Utilities.reply(e.getMessage(), this.description);
+			return;
+		}
 		int bandays = 1;
 		long tempTime = -1l;
 		boolean banAll = false;
@@ -34,7 +38,7 @@ public class BanCommand extends Command {
 		if(!e.getMember().isPresent()) return;
 		if(Utilities.userIsModerator(e.getMember().get())) {
 			for(String i : actualArgs) {
-				if(i.matches("^-d=\\d$")){
+				if(i.matches("^(?:-d|--deleteDays)=\\d$")){
 					try {
 						bandays = Integer.parseInt(i.split("-d=")[1]);
 					} catch(NumberFormatException ex) {
@@ -47,12 +51,13 @@ public class BanCommand extends Command {
 					continue;
 					
 				}
-				if(i.matches("^-A|--all$")){
+				if(i.matches("^-A|--allResults$")){
 					banAll = true;
 					continue;
 				}
 				if(i.matches("^(?:-t|--temp)=(\\d+)(s|m|h|d|w)$")) {
 					Matcher m = Pattern.compile("^(?:-t|--temp)=(\\d+)(m|h|d|w)$",Pattern.CASE_INSENSITIVE).matcher(i);
+					if(!m.find())continue;
 					long time = Long.parseLong(m.group(1));
 					String unit = m.group(2).toLowerCase();
 					switch(unit) {
@@ -90,12 +95,17 @@ public class BanCommand extends Command {
 						return;
 					}
 					int tbandays = bandays;
-					target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1));}).subscribe();
+					String reason = String.join(" ", args);
+					if(reason.split(args[0]).length > 1) {
+						reason = reason.split(args[0])[1];
+					} else reason = "[no reason specified]";
+					String treason = reason;
+					target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+treason);}).subscribe();
 					if(tempTime > 0) {
 						Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
-						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
 					} else {
-						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.BAN, 0, e.getGuild().block()));
+						ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.BAN, 0, e.getGuild().block()));
 					}
 					if(!silent) {
 						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Banned "+target.getUsername());
@@ -103,7 +113,7 @@ public class BanCommand extends Command {
 					}
 					return;
 				}
-				
+				Utilities.reply(e.getMessage(), "That user didnt exist!");
 			}
 			List<Member> partialresult = ArgumentParser.toMemberByPartial(actualArgs.get(0), e.getGuild().block());	
 			if(partialresult.size() > 1 && !banAll) {
@@ -113,6 +123,7 @@ public class BanCommand extends Command {
 			}
 			if(partialresult.size() < 1) {
 				Utilities.reply(e.getMessage(), "No members matched! Check your input and try again!");
+				return;
 			}
 			StringBuilder output = new StringBuilder("");
 			for(Member target : partialresult) {
@@ -126,15 +137,20 @@ public class BanCommand extends Command {
 				}
 				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 					output.append("I don't have permissions to ban!\n");	
-					return;
+					break;
 				}
 				int tbandays = bandays;
-				target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+String.join(" ", args).substring(args[0].length()+1));}).subscribe();			//TODO properly modlog it @lewistehminerz
+				String reason = String.join(" ", args);
+				if(reason.split(args[0]).length > 1) {
+					reason = reason.split(args[0])[1];
+				} else reason = "[no reason specified]";
+				String treason = reason;
+				target.ban(a->{a.setDeleteMessageDays(tbandays);a.setReason("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+treason);}).subscribe();
 				if(tempTime > 0) {
 					Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+e.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, e.getGuild().block()));
 				} else {
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), String.join(" ", args).substring(args[0].length()+1), null, CaseType.BAN, 0, e.getGuild().block()));
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.BAN, 0, e.getGuild().block()));
 				}
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Banned "+target.getUsername()+"\n");

@@ -25,7 +25,7 @@ public class ModLogger {
 		List<Object> modlog = guildoc.get("modlog", new ArrayList<>());
 		Map<String,Object> opts = guildoc.get("options",new HashMap<>());
 		Message modlogged = null;
-		if(opts.get("modlog").toString().length()>16) {
+		if(opts.getOrDefault("modlog","").toString().length()>16) {
 			Channel channel = Main.client.getChannelById(Snowflake.of(opts.get("modlog").toString())).block();
 			if(channel instanceof TextChannel) {
 				modlogged = Utilities.sendMessageBlocking((TextChannel)channel, modlogcase.toModLog());

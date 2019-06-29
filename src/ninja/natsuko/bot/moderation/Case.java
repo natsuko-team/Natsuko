@@ -129,6 +129,7 @@ public class Case {
 		out.put("type", this.type.toString().toLowerCase());
 		out.put("expiryDate", this.expiryDate);
 		out.put("reason", this.reason);
+		out.put("id", this.id);
 		if(this.strikes == -1) out.put("strikes", this.strikes);
 		return out;
 	}
@@ -148,11 +149,12 @@ public class Case {
 		String emoji = emojiForCase[0];
 		
 		// check if we can use the custom emoji
-		if (this.guild.getMemberById(Main.client.getSelfId().get()).block()
+		//disabled until we get custom emoji lol
+		/*if (this.guild.getMemberById(Main.client.getSelfId().get()).block()
 				.getBasePermissions().block().contains(Permission.USE_EXTERNAL_EMOJIS)
 				&& emojiForCase[1] != null) {
 			emoji = emojiForCase[1];
-		}
+		}*/
 		
 		String moderator = this.moderatorUser.getUsername() + "#" + this.moderatorUser.getDiscriminator();
 		
@@ -196,11 +198,11 @@ public class Case {
 		
 		String target = this.targetUser.getUsername() + "#" + this.targetUser.getDiscriminator();
 		
-		String formatBase = "`[ %s ]` %s (`%s`) %s %s (`%s`)\n`[  %s  ]` %s";
+		String formatBase = "`[ %s ]` %s (`%s`) %s %s (`%s`)\n`[  %s  ]` Reason: %s";
 		String temporary = "\n`[  %s ]` %s";
 		String finalStr = String.format(formatBase, time, emoji,
 				moderator, this.moderatorUser.getId().asString(), action, target,
-				this.targetUser.getId().asString(), "Reason", this.reason);
+				this.targetUser.getId().asString(), this.reason);
 		
 		if (this.type == CaseType.TEMPBAN || this.type == CaseType.TEMPMUTE) {
 			finalStr += String.format(temporary, "Expires",

@@ -1,6 +1,8 @@
 package ninja.natsuko.bot;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,10 +12,13 @@ import java.util.Set;
 import org.bson.Document;
 import org.ini4j.Wini;
 import org.reflections.Reflections;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
@@ -22,6 +27,8 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.commands.Command;
+import ninja.natsuko.bot.moderation.ModLogger;
+import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.scriptengine.ScriptRunner;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -34,6 +41,8 @@ public class Main {
 	
 	static String inst = "null";
 	public static void main(String[] args) {
+		Logger root = (Logger)LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+		root.setLevel(Level.INFO);
 		timedEventThread = new Thread(new Runnable() {
 
 			@Override
@@ -50,16 +59,19 @@ public class Main {
 						try {
 							switch(i.getString("type")) {
 							case "unban":
-								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+i.getLong("due")+"ms");
+								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms").subscribe();
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNBAN, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
 								db.getCollection("timed").deleteOne(i);
 								break;
 							case "unmute":
 								long roleId = 0l;
-								if(!opts.containsKey("mutedrole")) continue; //wtf?
+								if(!opts.containsKey("mutedrole")) {root.info("Mutedrole didnt exist upon auto-unmute"); return;} //wtf?
 								roleId = Long.parseLong(opts.get("mutedrole").toString());
 								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().getMemberById(Snowflake.of(i.getString("target"))).block().removeRole(
-										Snowflake.of(roleId), "Natsuko auto-unmute after "+i.getLong("due")+"ms");
+										Snowflake.of(roleId), "Natsuko auto-unmute after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms").subscribe();
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unmute after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNMUTE, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
 								db.getCollection("timed").deleteOne(i);
+								root.info("Unmuted a user", i);
 								break;
 							case "unstrike":
 								break;
@@ -68,7 +80,7 @@ public class Main {
 							}
 						} catch(Exception e) {
 							db.getCollection("timed").deleteOne(i); //it failed to remove it so it doesnt fuck up more things
-							e.printStackTrace(); //TODO properly log exception in timed thread
+							root.error("error in timedthread",e);
 						}
 					}
 				}
@@ -161,7 +173,12 @@ public class Main {
 			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
 			return;
 		} catch(Exception e) {
-			e.printStackTrace(); //TODO log properly kthhnx
+			StringWriter string = new StringWriter();
+			PrintWriter print = new PrintWriter(string);
+			e.printStackTrace(print);
+			String trace = string.toString();
+			event.getMessage().getChannel().block().createMessage(":warning: An error has occurred!\n```"+trace+"```").subscribe();
+			e.printStackTrace();
 		}
 	}
 }

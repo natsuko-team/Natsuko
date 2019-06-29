@@ -28,7 +28,7 @@ public class PingModsCommand extends Command {
 		}
 		List<Member> mods = e.getGuild().block().getMembers().filter(a->a.getRoleIds().contains(Snowflake.of(modRole))).filter(a->a.getPresence().block().getStatus().equals(Status.ONLINE)).collect(Collectors.toList()).block();
 		Member mod = mods.get(0);
-		Utilities.reply(e.getMessage(), "Mod Autoping: "+mod.getMention()+"\n**"+String.join(" ", args)+"**\nFrom: **"+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+"** ("+e.getMember().get().getId().asString()+")");
+		Utilities.reply(e.getMessage(), "Mod Autoping: "+mod.getMention()+"\n**"+(String.join(" ", args).length()>0?String.join(" ",args):"No reason specified")+"**\nFrom: **"+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+"** ("+e.getMember().get().getId().asString()+")");
 	}
 
 }

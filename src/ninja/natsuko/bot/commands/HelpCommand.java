@@ -13,7 +13,7 @@ public class HelpCommand extends Command {
 	private Reflections reflect = new Reflections("ninja.natsuko.bot.commands");
 	
 	public HelpCommand() {
-		super("help", "Display command list and usage information. Usage: n;help <command>");
+		super("help", "Display command list and usage information. Usage: n;help [command]");
 	}
 
 	@Override

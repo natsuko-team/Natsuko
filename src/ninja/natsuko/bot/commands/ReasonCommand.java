@@ -14,13 +14,17 @@ import ninja.natsuko.bot.util.Utilities;
 public class ReasonCommand extends Command {
 
 	public ReasonCommand() {
-		super("reason","Update the reason of a modlog entry.");
+		super("reason","Update the reason of a modlog entry. Usage: n;reason <id> <reason>");
 	}
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsModerator(e.getMember().get())) {
 			Utilities.reply(e.getMessage(), "You arent a moderator!");
+			return;
+		}
+		if(args.length < 2) {
+			Utilities.reply(e.getMessage(), this.description);
 			return;
 		}
 		Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();

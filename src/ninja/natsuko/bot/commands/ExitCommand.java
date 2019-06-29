@@ -7,7 +7,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class ExitCommand extends Command {
 
 	public ExitCommand() {
-		super("exit", "Kill the bot instance.");
+		super("exit", "Kill the bot instance. Usage: n;exit");
 	}
 
 	@Override
