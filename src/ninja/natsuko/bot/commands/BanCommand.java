@@ -29,6 +29,7 @@ public class BanCommand extends Command {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
 		if(actualArgs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);
+			return;
 		}
 		int bandays = 1;
 		long tempTime = -1l;

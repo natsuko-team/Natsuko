@@ -30,6 +30,7 @@ public class ConfigCommand extends Command {
 		}
 		if(aargs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);
+			return;
 		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		switch(aargs.get(0)) {

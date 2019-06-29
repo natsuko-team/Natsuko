@@ -23,6 +23,7 @@ public class ScriptCommand extends Command {
 		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
 		if(aargs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);
+			return;
 		}
 		Document guild = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 		List<String> scripts = guild.get("scripts",new ArrayList<>());

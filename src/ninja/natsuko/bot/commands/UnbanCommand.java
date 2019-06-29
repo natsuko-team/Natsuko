@@ -23,6 +23,7 @@ public class UnbanCommand extends Command {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
 		if(actualArgs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);
+			return;
 		}
 		boolean unbanAll = false;
 		boolean silent = false;

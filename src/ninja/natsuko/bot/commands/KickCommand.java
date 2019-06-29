@@ -23,6 +23,7 @@ public class KickCommand extends Command {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
 		if(actualArgs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);
+			return;
 		}
 		boolean kickAll = false;
 		boolean silent = false;

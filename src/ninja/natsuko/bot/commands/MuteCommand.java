@@ -32,6 +32,7 @@ public class MuteCommand extends Command {
 		List<String> actualArgs = ArgumentParser.toArgs(String.join(" ", args));
 		if(actualArgs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);
+			return;
 		}
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
 		boolean muteAll = false;

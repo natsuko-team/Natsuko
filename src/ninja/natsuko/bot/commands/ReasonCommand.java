@@ -23,6 +23,10 @@ public class ReasonCommand extends Command {
 			Utilities.reply(e.getMessage(), "You arent a moderator!");
 			return;
 		}
+		if(args.length < 2) {
+			Utilities.reply(e.getMessage(), this.description);
+			return;
+		}
 		Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 		List<Document> modlog = guildoc.get("modlog", new ArrayList<>());
 		Document theCase = modlog.stream().filter(d->d.getInteger("id").equals(ArgumentParser.toInt(args[0]))).collect(Collectors.toList()).get(0);

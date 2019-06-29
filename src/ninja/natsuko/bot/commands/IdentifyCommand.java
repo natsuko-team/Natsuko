@@ -16,6 +16,7 @@ public class IdentifyCommand extends Command {
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(args.length == 0) {
 			Utilities.reply(e.getMessage(), this.description);
+			return;
 		}
 		if(Utilities.isNumbers(args[0].replaceAll("[<@!>]", ""))) {
 			long userId = Long.parseLong(args[0].replaceAll("[<@!>]", ""));
