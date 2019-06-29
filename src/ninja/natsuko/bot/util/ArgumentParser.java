@@ -37,7 +37,7 @@ public class ArgumentParser {
 		return Main.client.getUsers().filter(m->{return ((m.getUsername().toLowerCase()+"#"+m.getDiscriminator()).contains(partial.toLowerCase()));}).collect(Collectors.toList()).block();
 	}
 	public static List<Member> toMemberByDTag(String dtag,Guild guild) {
-		return guild.getMembers().collectList().block().stream().filter(m->{return (m.getUsername()+"#"+m.getDiscriminator() == dtag);}).collect(Collectors.toList());
+		return guild.getMembers().collectList().block().stream().filter(m->{return (m.getUsername()+"#"+m.getDiscriminator()).equals(dtag);}).collect(Collectors.toList());
 	}
 	public static List<Member> toMemberByPartial(String partial,Guild guild) {
 		return guild.getMembers().filter(m->{return ((m.getUsername().toLowerCase()+"#"+m.getDiscriminator()).contains(partial.toLowerCase()));}).collect(Collectors.toList()).block();
