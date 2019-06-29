@@ -102,7 +102,7 @@ public class Utilities {
 		if(member.getBasePermissions().block().contains(Permission.MANAGE_MESSAGES)) return true;
 		if(member.getBasePermissions().block().contains(Permission.BAN_MEMBERS)) return true;
 		if(member.getBasePermissions().block().contains(Permission.KICK_MEMBERS)) return true;
-		Long modRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("")).first().getLong("modrole");
+		Long modRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("{\"id\":"+member.getGuild().block().getId().asString()+"}")).first().getLong("modrole");
 		if(modRole == null) {
 			return false;
 		}
