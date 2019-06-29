@@ -59,8 +59,8 @@ public class Main {
 						try {
 							switch(i.getString("type")) {
 							case "unban":
-								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+i.getLong("due")+"ms").subscribe();
-								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unban after "+i.getLong("due")+"ms", null, CaseType.UNBAN, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
+								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms").subscribe();
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNBAN, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
 								db.getCollection("timed").deleteOne(i);
 								break;
 							case "unmute":
@@ -68,8 +68,8 @@ public class Main {
 								if(!opts.containsKey("mutedrole")) {root.info("Mutedrole didnt exist upon auto-unmute"); return;} //wtf?
 								roleId = Long.parseLong(opts.get("mutedrole").toString());
 								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().getMemberById(Snowflake.of(i.getString("target"))).block().removeRole(
-										Snowflake.of(roleId), "Natsuko auto-unmute after "+i.getLong("due")+"ms").subscribe();
-								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unmute after "+i.getLong("due")+"ms", null, CaseType.UNMUTE, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
+										Snowflake.of(roleId), "Natsuko auto-unmute after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms").subscribe();
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unmute after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNMUTE, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
 								db.getCollection("timed").deleteOne(i);
 								root.info("Unmuted a user", i);
 								break;
