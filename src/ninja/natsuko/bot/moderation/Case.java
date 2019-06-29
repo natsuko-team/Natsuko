@@ -196,7 +196,7 @@ public class Case {
 		
 		String target = this.targetUser.getUsername() + "#" + this.targetUser.getDiscriminator();
 		
-		String formatBase = "`[ %s ]` %s (`%s`) %s %s (`%s`)\n`[  %s  ]` %s";
+		String formatBase = "`[ %s ]` %s %s (`%s`) %s %s (`%s`)\n`[  %s  ]` %s";
 		String temporary = "\n`[  %s ]` %s";
 		String finalStr = String.format(formatBase, time, emoji,
 				moderator, this.moderatorUser.getId().asString(), action, target,
