@@ -152,9 +152,9 @@ public class Utilities {
 	public static void processStrike(Member target, Integer strikes) {
 		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(target.getGuild().block())).first().get("options", new HashMap<>());
 		if(strikes >= (Integer)opts.getOrDefault("strikes.banThreshold", 3)){
-			Matcher m = Pattern.compile("^(?:-t|--temp)=-?(\\d+)(m|h|d|w)$",Pattern.CASE_INSENSITIVE).matcher(opts.getOrDefault("strikes.bantime", "-1m").toString());
+			Matcher m = Pattern.compile("^(?:-t|--temp)=(\\d+)(m|h|d|w)$",Pattern.CASE_INSENSITIVE).matcher(opts.getOrDefault("strikes.bantime", "0m").toString());
 			boolean permanent = true;
-			if(!opts.getOrDefault("strikes.bantime", "-1m").toString().equals("-1m")) permanent = false;
+			if(!opts.getOrDefault("strikes.bantime", "0m").toString().equals("0m")) permanent = false;
 			if(!m.find()) permanent = true;
 			long time = Long.parseLong(m.group(1));
 			String unit = m.group(2).toLowerCase();
@@ -179,6 +179,9 @@ public class Utilities {
 				b.setReason("Natsuko auto-ban for exceeding strike threshold");
 				b.setDeleteMessageDays(1);
 			}).subscribe();
+			if(!permanent) {
+				Main.db.getCollection("timed").insertOne(Document.parse("{\"type\":\"unban\",\"guild\":"+target.getGuild().block().getId().asString()+",\"target\":\""+target.getId().asString()+"\",\"due\":"+tempTime+"}"));
+			}
 			ModLogger.logCase(target.getGuild().block(), ModLogger.newCase(target, Main.client.getSelf().block(), "Natsuko auto-ban for exceeding strike threshold.", permanent?null:Instant.ofEpochMilli(tempTime), CaseType.BAN, 0, target.getGuild().block()));
 		}
 		if(strikes >= (Integer)opts.getOrDefault("strikes.kickThreshold", 2)){
