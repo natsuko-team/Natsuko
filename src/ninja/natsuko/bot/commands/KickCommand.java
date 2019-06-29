@@ -50,6 +50,10 @@ public class KickCommand extends Command {
 						Utilities.reply(e.getMessage(), "That user is above the bot!");
 						return;
 					}
+					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
+						Utilities.reply(e.getMessage(),"I don't have permissions to kick!");	
+						return;
+					}
 					String reason = String.join(" ", args);
 					if(reason.split(args[0]).length > 1) {
 						reason = reason.split(args[0])[1];
@@ -83,8 +87,8 @@ public class KickCommand extends Command {
 					output.append("That user is above the bot!\n");
 					continue;
 				}
-				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
-					output.append("I don't have permissions to ban!\n");	
+				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
+					output.append("I don't have permissions to kick!\n");	
 					break;
 				}
 				String reason = String.join(" ", args);
