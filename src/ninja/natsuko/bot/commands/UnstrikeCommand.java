@@ -59,7 +59,12 @@ public class UnstrikeCommand extends Command {
 					} else reason = "[no reason specified]";
 					Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 					List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
-					Document userStrikes = strikes.stream().filter(a->a.getLong("id") == target.getId().asLong()).collect(Collectors.toList()).get(0);
+					List<Document> temp = strikes.stream().filter(a->a.getLong("id") == target.getId().asLong()).collect(Collectors.toList());
+					Document userStrikes;
+					if(temp.size() < 1) {
+						userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
+					} else
+					userStrikes = temp.get(0);
 					if(userStrikes == null) {
 						userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":0}");
 						strikes.add(userStrikes);
@@ -105,7 +110,12 @@ public class UnstrikeCommand extends Command {
 				} else reason = "[no reason specified]";
 				Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
 				List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
-				Document userStrikes = strikes.stream().filter(a->a.getLong("id") == target.getId().asLong()).collect(Collectors.toList()).get(0);
+				List<Document> temp = strikes.stream().filter(a->a.getLong("id") == target.getId().asLong()).collect(Collectors.toList());
+				Document userStrikes;
+				if(temp.size() < 1) {
+					userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
+				} else
+				userStrikes = temp.get(0);
 				if(userStrikes == null) {
 					userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":0}");
 					strikes.add(userStrikes);

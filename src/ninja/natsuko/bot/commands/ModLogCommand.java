@@ -38,7 +38,7 @@ public class ModLogCommand extends Command {
 				Utilities.reply(e.getMessage(), "Administrate the modlog. Usage: n;modlog view <id>");
 				return;
 			}
-			Document entry = modlog.get(ArgumentParser.toInt(args[1]));
+			Document entry = modlog.get(ArgumentParser.toInt(args[1])-1);
 			Utilities.reply(e.getMessage(), new Case(Main.client.getUserById(Snowflake.of(entry.get("targetUser").toString())).block(),Main.client.getUserById(Snowflake.of(entry.get("moderatorUser").toString())).block(),Instant.ofEpochMilli(entry.getLong("date")),CaseType.valueOf(entry.get("type").toString().toUpperCase()),entry.get("expiryDate")==null?null:Instant.ofEpochMilli(entry.getLong("expiryDate")),entry.get("reason").toString(),entry.getInteger("id")).toModLog());
 			break;
 		case "count":
