@@ -3,6 +3,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,11 +18,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.bson.Document;
 import org.ini4j.Wini;
 import org.reflections.Reflections;
 import org.slf4j.LoggerFactory;
 
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
@@ -34,6 +47,17 @@ import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.core.object.util.Snowflake;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpVersion;
 import ninja.natsuko.bot.commands.Command;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
@@ -198,6 +222,52 @@ public class Main {
 				}
 			});
 			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Main::processCommand);
+			
+			new Thread(() -> {
+				URL url;
+				try {
+					url = new URL(config.get("Cachet", "url"));
+				} catch (MalformedURLException e) {
+					root.error("Status URL malformed. Not bothering to run status thread.");
+					return;
+				}
+				
+				String metricId = config.get("Cachet", "metric");
+				String apiKey = config.get("Cachet", "key");
+				
+				String metricsUrl;
+				try {
+					metricsUrl = new URL(url, "/api/v1/metrics/" + metricId + "/points").toString();
+				} catch (MalformedURLException e1) {
+					root.error("URL is wrong!");
+					return;
+				}
+				root.info("Metrics URL: " + metricsUrl);
+				
+				while (true) {
+					try {
+						Thread.sleep(15000);
+
+						String data = "{\"value\":" + client.getResponseTime() + "}";
+						
+						try (CloseableHttpClient client1 = HttpClients.createDefault()) {
+							HttpPost post = new HttpPost(metricsUrl);
+							
+							post.setEntity(new StringEntity(data));
+							
+							post.setHeader("X-Cachet-Token", apiKey);
+							post.setHeader("Accept", "application/json");
+							post.setHeader("Content-type", "application/json");
+							
+							client1.execute(post).close(); // close the response, not the client
+						}
+					} catch (InterruptedException | IOException e) {
+						root.error(e.getMessage());
+						break;
+					}
+				}
+			}, "Status Metric Thread").start();
+			
 			client.login().block();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -289,11 +359,27 @@ public class Main {
 			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
 			return;
 		} catch(Exception e) {
+			String id = RandomStringUtils.randomAlphabetic(10);
+			
 			StringWriter string = new StringWriter();
-			PrintWriter print = new PrintWriter(string);
-			e.printStackTrace(print);
+			PrintWriter printWriter = new PrintWriter(string);
+			e.printStackTrace(printWriter);
+			
 			String trace = string.toString();
-			event.getMessage().getChannel().block().createMessage(":warning: An error has occurred!\n```"+trace.substring(0,Math.min(1900, trace.length()))+"```").subscribe();
+			
+			if (event.getMessage().getContent().isPresent()) {
+				if (event.getMessage().getContent().get().startsWith("n;")) {
+					event.getMessage().getChannel().block().createMessage(":warning: An error has occurred. We recommend you join the support server. Make sure to include this ID with your support request: `" + id +  "`.");
+				}
+			}
+			
+			TextChannel chan = (TextChannel) client.getChannelById(Snowflake.of(597818301183295596L)).block();
+			chan.createMessage("```" + trace.substring(0,Math.min(1900, trace.length())) + "```\n\n" +
+					"ID: `" + id + "`\n" +  
+					"Guild: " + event.getGuild().block().getName() + " [" + event.getGuild().block().getId().toString() + "]\n" +
+					"Message Content: " + (event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "N/A")).subscribe();
+			
+			
 			e.printStackTrace();
 		}
 	}
