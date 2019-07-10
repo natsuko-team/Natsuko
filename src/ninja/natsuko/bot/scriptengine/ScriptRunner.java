@@ -43,6 +43,10 @@ public class ScriptRunner {
 	
 	public void run(Message message) {
 		if(this.scriptsErrored) return;
+		this.sandbox = NashornSandboxes.create();
+		this.sandbox.setMaxCPUTime(60000);
+		this.sandbox.setMaxMemory(30000000);
+		this.sandbox.setExecutor(this.executor);
 		this.sandbox.allow(Snowflake.class);
 		this.sandbox.inject("util", new SafeUtils());
 		this.sandbox.inject("message", new SafeMessage(message));
