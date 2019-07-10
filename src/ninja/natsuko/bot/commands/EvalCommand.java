@@ -28,8 +28,12 @@ public class EvalCommand extends Command {
 		engine.put("args", args);
 		
 		try {
-			Object output = engine.eval(String.join(" ", args)).toString();
-			Utilities.reply(e.getMessage(), "```["+output.getClass().getTypeName()+"]"+output+"```");
+			Object output = engine.eval(String.join(" ", args));
+			if(output == null) {
+				Utilities.reply(e.getMessage(), "```[java.lang.Object] null```");
+				return;
+			}
+			Utilities.reply(e.getMessage(), "```[ "+output.getClass().getTypeName()+" ] "+output+"```");
 		} catch (ScriptException e1) {
 			StringWriter string = new StringWriter();
 			PrintWriter print = new PrintWriter(string);
