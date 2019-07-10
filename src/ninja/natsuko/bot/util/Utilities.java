@@ -100,14 +100,16 @@ public class Utilities {
 	
 	public static boolean userIsModerator(Member member) {
 		if(userIsStaff(member)) return true;
+		if(userIsAdministrator(member)) return true;
 		if(member.getBasePermissions().block().contains(Permission.MANAGE_MESSAGES)) return true;
 		if(member.getBasePermissions().block().contains(Permission.BAN_MEMBERS)) return true;
 		if(member.getBasePermissions().block().contains(Permission.KICK_MEMBERS)) return true;
-		Long modRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("{\"id\":"+member.getGuild().block().getId().asString()+"}")).first().getLong("modrole");
+		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(member.getGuild().block())).first().get("options", new HashMap<>());
+		Object modRole = opts.get("modrole");
 		if(modRole == null) {
 			return false;
 		}
-		if(member.getRoleIds().contains(Snowflake.of(modRole))) {
+		if(member.getRoleIds().contains(Snowflake.of(Long.parseLong(modRole.toString())))) {
 			return true;
 		}
 		return false;
@@ -116,11 +118,12 @@ public class Utilities {
 	public static boolean userIsAdministrator(Member member) {
 		if(userIsStaff(member)) return true;
 		if(member.getBasePermissions().block().contains(Permission.ADMINISTRATOR) || member.getGuild().block().getOwner().block().equals(member)) return true;
-		Long adminRole = Main.db.getCollection("guilds").find(Document.parse("{\"id\":"+member.getGuild().block().getId().asString()+"}")).first().getLong("adminrole");
+		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(member.getGuild().block())).first().get("options", new HashMap<>());
+		Object adminRole = opts.get("adminrole");
 		if(adminRole == null) {
 			return false;
 		}
-		if(member.getRoleIds().contains(Snowflake.of(adminRole))) {
+		if(member.getRoleIds().contains(Snowflake.of(Long.parseLong(adminRole.toString())))) {
 			return true;
 		}
 		return false;
