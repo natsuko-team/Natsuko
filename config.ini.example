@@ -4,3 +4,8 @@ token = no.token4.you
 [Mongo]
 uri = mongodb://localhost:27017
 database = natsuko
+
+[Status]
+url = https://your.status.url/api/v1/
+key = your_cachet_api_key
+metric = 1
