@@ -99,6 +99,7 @@ public class Utilities {
 	}
 	
 	public static boolean userIsModerator(Member member) {
+		if(userIsStaff(member)) return true;
 		if(member.getBasePermissions().block().contains(Permission.MANAGE_MESSAGES)) return true;
 		if(member.getBasePermissions().block().contains(Permission.BAN_MEMBERS)) return true;
 		if(member.getBasePermissions().block().contains(Permission.KICK_MEMBERS)) return true;
@@ -113,6 +114,7 @@ public class Utilities {
 	}
 	
 	public static boolean userIsAdministrator(Member member) {
+		if(userIsStaff(member)) return true;
 		if(member.getBasePermissions().block().contains(Permission.ADMINISTRATOR) || member.getGuild().block().getOwner().block().equals(member)) return true;
 		Long adminRole = Main.db.getCollection("guilds").find(Document.parse("{\"id\":"+member.getGuild().block().getId().asString()+"}")).first().getLong("adminrole");
 		if(adminRole == null) {
