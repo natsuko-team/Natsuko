@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -359,14 +360,15 @@ public class Main {
 			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
 			return;
 		} catch(Exception e) {
-			String id = RandomStringUtils.randomAlphabetic(10);
+			String id = RandomStringUtils.randomAlphabetic(10); //TODO random strings as id's suck, use word ids instead. ex: artful staple plastic contingency . easier for people to remember and type
+			
+			root.error(id,e)
 			
 			StringWriter string = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(string);
 			e.printStackTrace(printWriter);
 			
 			String trace = string.toString();
-			
 			if (event.getMessage().getContent().isPresent()) {
 				if (event.getMessage().getContent().get().startsWith("n;")) {
 					event.getMessage().getChannel().block().createMessage(":warning: An error has occurred. We recommend you join the support server. Make sure to include this ID with your support request: `" + id +  "`.");
@@ -374,10 +376,12 @@ public class Main {
 			}
 			
 			TextChannel chan = (TextChannel) client.getChannelById(Snowflake.of(597818301183295596L)).block();
-			chan.createMessage("```" + trace.substring(0,Math.min(1900, trace.length())) + "```\n\n" +
-					"ID: `" + id + "`\n" +  
+			chan.createMessage(a->{
+				a.setContent("ID: `" + id + "`\n" +  
 					"Guild: " + event.getGuild().block().getName() + " [" + event.getGuild().block().getId().toString() + "]\n" +
-					"Message Content: " + (event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "N/A")).subscribe();
+					"Message Content: " + (event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "N/A"));
+				a.setFile(id,new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8))
+			}).subscribe();
 			
 			
 			e.printStackTrace();
