@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.awt.Color;
 import java.util.function.Consumer;
 
+import org.bson.Document;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
@@ -114,5 +117,9 @@ public class Utilities {
 	
 	public static boolean userIsStaff(User user) {
 		return Arrays.asList(153353572711530496l,251557870603075586l,96269247411400704l,190544080164487168l,254422934045589505l).contains(user.getId().asLong());
+	}
+	
+	public static Document guildToFindDoc(Guild guild) {
+		return Document.parse("{\"id\":"+guild.getId().asString()+"}");
 	}
 }

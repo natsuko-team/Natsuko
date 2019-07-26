@@ -26,6 +26,7 @@ public class Main {
 	public static DiscordClient client;
 	
 	static String inst = "null";
+	public static Map<Long,Long> pingmodsAwaitingConfirm = new HashMap<>();
 	public static void main(String[] args) {
 		Reflections reflections = new Reflections("ninja.natsuko.bot.commands"); // restrict to command package to prevent unnecessary searching
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
