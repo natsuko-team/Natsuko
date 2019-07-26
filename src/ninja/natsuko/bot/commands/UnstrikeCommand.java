@@ -1,20 +1,23 @@
 package ninja.natsuko.bot.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bson.Document;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.util.Permission;
+import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
 
-public class KickCommand extends Command {
+public class UnstrikeCommand extends Command {
 
-	public KickCommand() {
-		super("kick", "Kick a user from the server. Usage: n;kick <Mention, ID or query> [-A/--allResults|-s/--silent] [reason]");
+	public UnstrikeCommand() {
+		super("unstrike", "Untrike a member. Usage: n;strike <Mention, ID or query> [-A/--allResults|-s/--silent] [reason]");
 	}
 
 	
@@ -50,18 +53,32 @@ public class KickCommand extends Command {
 						Utilities.reply(e.getMessage(), "That user is above the bot!");
 						return;
 					}
-					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
-						Utilities.reply(e.getMessage(),"I don't have permissions to kick!");	
-						return;
-					}
 					String reason = String.join(" ", args);
 					if(reason.split(args[0]).length > 1) {
 						reason = reason.split(args[0])[1];
 					} else reason = "[no reason specified]";
-					target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+reason).subscribe();
-					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.KICK, 0, e.getGuild().block()));
+					Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
+					List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
+					List<Document> temp = strikes.stream().filter(a->a.getLong("id") == target.getId().asLong()).collect(Collectors.toList());
+					Document userStrikes;
+					if(temp.size() < 1) {
+						userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
+					} else
+					userStrikes = temp.get(0);
+					if(userStrikes == null) {
+						userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":0}");
+						strikes.add(userStrikes);
+					}
+					else {
+						int i = strikes.indexOf(userStrikes);
+						userStrikes.put("strikes", userStrikes.getInteger("strikes")-1);
+						strikes.set(i, userStrikes);
+					}
+					guildoc.put("strikes", strikes);
+					Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guildoc);
+					ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNSTRIKE, 1, e.getGuild().block()));
 					if(!silent) {
-						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Kicked "+target.getUsername());
+						Utilities.reply(e.getMessage(), e.getMember().get().getMention() + " Unstruck "+target.getUsername());
 						return;
 					}
 					return;
@@ -87,18 +104,32 @@ public class KickCommand extends Command {
 					output.append("That user is above the bot!\n");
 					continue;
 				}
-				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
-					output.append("I don't have permissions to kick!\n");	
-					break;
-				}
 				String reason = String.join(" ", args);
 				if(reason.split(args[0]).length > 1) {
 					reason = reason.split(args[0])[1];
 				} else reason = "[no reason specified]";
-				target.kick("["+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+" ("+e.getMember().get().getId().asString()+") ] "+reason).subscribe();
-				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.KICK, 0, e.getGuild().block()));
+				Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first();
+				List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
+				List<Document> temp = strikes.stream().filter(a->a.getLong("id") == target.getId().asLong()).collect(Collectors.toList());
+				Document userStrikes;
+				if(temp.size() < 1) {
+					userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
+				} else
+				userStrikes = temp.get(0);
+				if(userStrikes == null) {
+					userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":0}");
+					strikes.add(userStrikes);
+				}
+				else {
+					int i = strikes.indexOf(userStrikes);
+					userStrikes.put("strikes", userStrikes.getInteger("strikes")-1);
+					strikes.set(i, userStrikes);
+				}
+				guildoc.put("strikes", strikes);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()), guildoc);
+				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNSTRIKE, 1, e.getGuild().block()));
 				if(!silent) {
-					output.append(e.getMember().get().getMention() + " Kicked "+target.getUsername()+"\n");
+					output.append(e.getMember().get().getMention() + " Unstruck "+target.getUsername()+"\n");
 					continue;
 				}
 			}

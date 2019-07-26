@@ -1,6 +1,12 @@
 package ninja.natsuko.bot.commands;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.presence.Status;
 import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
@@ -14,17 +20,15 @@ public class PingModsCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		Long modRole = Main.db.getCollection("guilds").find(org.bson.Document.parse("")).first().getLong("modRole");
+		Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(e.getGuild().block())).first().get("options", new HashMap<>());
+		Long modRole = (Long) opts.getOrDefault("modrole",null);
 		if(modRole == null) {
-			Utilities.reply(e.getMessage(), "⚠ The `Moderators` role has not been set! Please set it with <NYI COMMAND>"); //TODO implement modlog setting
+			Utilities.reply(e.getMessage(), "The Moderators role hasnt been set! Set it with `n;config set modrole <mod role id or mention>`!");
 			return;
 		}
-		String modId = e.getGuild().block().getMembers().filter(m->{return m.getRoleIds().contains(Snowflake.of(modRole)) && m.getPresence().block().getStatus().equals(Status.ONLINE);}).blockFirst().getId().asString();
-		Utilities.reply(e.getMessage(), "Mod Autoping: <@"+modId+"> \n"
-				+ "**"+((String.join("args", " ").length()>1)?String.join("args", " "):"No reason provided.")+"**\n"
-				+ "From: **"+e.getMember().get().getUsername()+"** ("+e.getMember().get().getId().asString()+")");
-		Main.pingmodsAwaitingConfirm.put(e.getGuild().block().getId().asLong(),e.getMessage().getChannel().block().getId().asLong());
-		return;
+		List<Member> mods = e.getGuild().block().getMembers().filter(a->a.getRoleIds().contains(Snowflake.of(modRole))&&!a.isBot()).filter(a->a.getPresence().block().getStatus().equals(Status.ONLINE)).collect(Collectors.toList()).block();
+		Member mod = mods.get(0);
+		Utilities.reply(e.getMessage(), "Mod Autoping: "+mod.getMention()+"\n**"+(String.join(" ", args).length()>0?String.join(" ",args):"No reason specified")+"**\nFrom: **"+e.getMember().get().getUsername()+"#"+e.getMember().get().getDiscriminator()+"** ("+e.getMember().get().getId().asString()+")");
 	}
 
 }

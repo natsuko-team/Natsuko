@@ -17,9 +17,12 @@ public class ArgumentParser {
 
 	public static List<String> toArgs(String string){
 		List<String> temp = new ArrayList<>();
-		Matcher baseMatcher = Pattern.compile("").matcher(string);
+		Matcher baseMatcher = Pattern.compile("(\"(?:(?:.*?)(?!\\\").)\"|\\S*)").matcher(string);
 		while (baseMatcher.find()) {
-		    temp.add(baseMatcher.group(1));
+			String match = baseMatcher.group(1);
+			if(match.matches("^\".+\"$")) match = match.substring(1, match.length()-1);
+			if(match.length() == 0) continue;
+		    temp.add(match);
 		}
 		return temp;
 	}
@@ -31,16 +34,16 @@ public class ArgumentParser {
 		return Main.client.getUsers().filter(m->{return (m.getUsername()+"#"+m.getDiscriminator() == dtag);}).collect(Collectors.toList()).block();
 	}
 	public static List<User> toUserByPartial(String partial) {
-		return Main.client.getUsers().filter(m->{return ((m.getUsername()+"#"+m.getDiscriminator()).contains(partial));}).collect(Collectors.toList()).block();
+		return Main.client.getUsers().filter(m->{return ((m.getUsername().toLowerCase()+"#"+m.getDiscriminator()).contains(partial.toLowerCase()));}).collect(Collectors.toList()).block();
 	}
 	public static List<Member> toMemberByDTag(String dtag,Guild guild) {
-		return guild.getMembers().filter(m->{return (m.getUsername()+"#"+m.getDiscriminator() == dtag);}).collect(Collectors.toList()).block();
+		return guild.getMembers().collectList().block().stream().filter(m->{return (m.getUsername()+"#"+m.getDiscriminator()).equals(dtag);}).collect(Collectors.toList());
 	}
 	public static List<Member> toMemberByPartial(String partial,Guild guild) {
-		return guild.getMembers().filter(m->{return ((m.getUsername()+"#"+m.getDiscriminator()).contains(partial));}).collect(Collectors.toList()).block();
+		return guild.getMembers().filter(m->{return ((m.getUsername().toLowerCase()+"#"+m.getDiscriminator()).contains(partial.toLowerCase()));}).collect(Collectors.toList()).block();
 	}
-	public static Member toMemberByID(String user, String guild) {
-		return toGuild(guild).getMemberById(Snowflake.of(user)).block();
+	public static Member toMemberByID(String user, Guild guild) {
+		return guild.getMemberById(Snowflake.of(user)).block();
 	}
 	public static Guild toGuild(String guild) {
 		return Main.client.getGuildById(Snowflake.of(guild)).block();
