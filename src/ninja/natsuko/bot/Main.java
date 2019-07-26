@@ -362,7 +362,7 @@ public class Main {
 		} catch(Exception e) {
 			String id = RandomStringUtils.randomAlphabetic(10); //TODO random strings as id's suck, use word ids instead. ex: artful staple plastic contingency . easier for people to remember and type
 			
-			root.error(id,e)
+			root.error(id,e);
 			
 			StringWriter string = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(string);
@@ -380,7 +380,7 @@ public class Main {
 				a.setContent("ID: `" + id + "`\n" +  
 					"Guild: " + event.getGuild().block().getName() + " [" + event.getGuild().block().getId().toString() + "]\n" +
 					"Message Content: " + (event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "N/A"));
-				a.setFile(id,new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8))
+				a.setFile("natsuko-error_"+id+".txt",new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8)));
 			}).subscribe();
 			
 			
