@@ -276,6 +276,7 @@ public class Main {
 	}
 
 	private static void processCommand(MessageCreateEvent event) {
+		Logger logger = (Logger)LoggerFactory.getLogger("ninja.natsuko.bot.Main");
 		try {
 			if(!event.getMember().isPresent()) return;
 			
@@ -362,7 +363,7 @@ public class Main {
 		} catch(Exception e) {
 			String id = RandomStringUtils.randomAlphabetic(10); //TODO random strings as id's suck, use word ids instead. ex: artful staple plastic contingency . easier for people to remember and type
 			
-			root.error(id,e);
+			logger.error(id,e);
 			
 			StringWriter string = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(string);
