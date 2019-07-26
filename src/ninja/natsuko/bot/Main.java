@@ -380,7 +380,7 @@ public class Main {
 				a.setContent("ID: `" + id + "`\n" +  
 					"Guild: " + event.getGuild().block().getName() + " [" + event.getGuild().block().getId().toString() + "]\n" +
 					"Message Content: " + (event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "N/A"));
-				a.setFile("natsuko-error_"+id+".txt",new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8)));
+				a.addFile("natsuko-error_"+id+".txt",new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8)));
 			}).subscribe();
 			
 			
