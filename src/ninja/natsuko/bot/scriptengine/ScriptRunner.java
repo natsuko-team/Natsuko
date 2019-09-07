@@ -10,6 +10,7 @@ import javax.script.ScriptException;
 import delight.nashornsandbox.NashornSandbox;
 import delight.nashornsandbox.NashornSandboxes;
 import delight.nashornsandbox.exceptions.ScriptCPUAbuseException;
+import delight.nashornsandbox.exceptions.ScriptMemoryAbuseException;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.util.Snowflake;
@@ -54,11 +55,16 @@ public class ScriptRunner {
 			try {
 				this.sandbox.eval("\n"+i);
 			} catch (ScriptCPUAbuseException e) {
-				Utilities.reply(message, "ERROR: A script exceeded the Memory or Time limit.\nPlease check your scripts for memory leaks or infinite loops.");
+				Utilities.reply(message, "ERROR: A script exceeded the CPU Time limit.\nPlease check your scripts for infinite loops, or make them shorter.\nAll scripts have been disabled, You will not recieve a further message until a script is added, edited or deleted");
 				this.scriptsErrored = true;
 				return;
-			} catch (ScriptException e) {
-				Utilities.reply(message, "ERROR: A script threw an error:\n"+e.getMessage());
+			} catch(ScriptMemoryAbuseException e) {
+				Utilities.reply(message, "ERROR: A script exceeded the Memory Limit of 3 Megabytes.\nPlease check your scripts for memory leaks.\nAll scripts have been disabled, You will not recieve a further message until a script is added, edited or deleted");
+				this.scriptsErrored = true;
+				return;
+			}
+			catch (ScriptException e) {
+				Utilities.reply(message, "ERROR: A script threw an error:\n```"+e.getMessage()+"```\nAll scripts have been disabled, You will not recieve a further message until a script is added, edited or deleted.");
 				this.scriptsErrored = true;
 				return;
 			}
