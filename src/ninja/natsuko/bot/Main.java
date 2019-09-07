@@ -1,13 +1,10 @@
 package ninja.natsuko.bot;
+import java.io.ByteArrayInputStream;	
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -20,7 +17,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -30,7 +26,6 @@ import org.ini4j.Wini;
 import org.reflections.Reflections;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
@@ -43,22 +38,13 @@ import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.core.object.util.Snowflake;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpVersion;
+import discord4j.rest.http.client.ClientException;
 import ninja.natsuko.bot.commands.Command;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
@@ -157,6 +143,27 @@ public class Main {
 								root.info("Unmuted a user", i);
 								break;
 							case "unstrike":
+								Guild guild = client.getGuildById(Snowflake.of(i.getLong("guild"))).block();
+								Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(guild)).first();
+								List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
+								List<Document> temp = strikes.stream().filter(a->a.getLong("id") == Snowflake.of(i.getString("target")).asLong()).collect(Collectors.toList());
+								Document userStrikes;
+								if(temp.size() < 1) {
+									userStrikes = Document.parse("{\"id\":"+i.getString("target")+",\"strikes\":0}");
+								} else
+								userStrikes = temp.get(0);
+								if(userStrikes == null) {
+									userStrikes = Document.parse("{\"id\":"+i.getString("target")+",\"strikes\":0}");
+									strikes.add(userStrikes);
+								}
+								else {
+									int j = strikes.indexOf(userStrikes);
+									userStrikes.put("strikes", userStrikes.getInteger("strikes")-1);
+									strikes.set(j, userStrikes);
+								}
+								guildoc.put("strikes", strikes);
+								Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(guild), guildoc);
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unstrike after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNSTRIKE, 1, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
 								break;
 							default:
 								break;
@@ -208,7 +215,9 @@ public class Main {
 			});
 			client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(event->{
 				if(event.getMember().getUsername().matches("(discord.gg|twitter.com|discordapp.com|dis.gd)")) {
-					event.getMember().ban(a->{a.setReason("Natsuko autoban for: BadURL in username");a.setDeleteMessageDays(1);});
+					try {
+					event.getMember().ban(a->{a.setReason("Natsuko autoban for: BadURL in username");a.setDeleteMessageDays(1);}).block();
+					} catch (ClientException e) {return;/*probs missing perms*/}
 					ModLogger.logCase(event.getGuild().block(), ModLogger.newCase(event.getMember(), client.getSelf().block(), "Natsuko auto-ban for BadURL in username.", null, CaseType.BAN, 0, event.getGuild().block()));
 					Utilities.sendMessage((TextChannel)client.getChannelById(Snowflake.of(591729986465955866l)).block(), "NOTICE: User with BadURL in name: "+event.getMember().getId().asString()+" "+event.getMember().getUsername());
 				}
