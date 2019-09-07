@@ -34,6 +34,7 @@ public class Case {
 		 */
 		put(CaseType.TEMPBAN, new String[] { ":hammer:", null }); // hammer those bad boys
 		put(CaseType.BAN, new String[] { ":hammer:", null });
+		put(CaseType.PURGE, new String[] { ":wastebasket:", null }); //delet this pls
 		
 		// removing punishments
 		put(CaseType.UNSTRIKE, new String[] { ":flag_white:", null }); // don't know for this one, white flag? it's like surrendering a strike
@@ -49,6 +50,7 @@ public class Case {
 		KICK,
 		TEMPBAN,
 		BAN,
+		PURGE,
 		
 		// removing punishments
 		UNSTRIKE,
@@ -72,8 +74,8 @@ public class Case {
 	// only set if CaseType = TEMPMUTE | TEMPBAN
 	public Instant expiryDate;
 	
-	// must be set if CaseType = STRIKE | UNSTRIKE
-	public int strikes = -1;
+	// must be set if CaseType = STRIKE | UNSTRIKE | PURGE
+	public int amount = -1;
 	
 	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate, int id) {
 		this.targetUser = target;
@@ -85,34 +87,19 @@ public class Case {
 	}
 	
 	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason, int id) {
-		this.targetUser = target;
-		this.moderatorUser = moderator;
-		this.date = date;
-		this.type = type;
-		this.expiryDate = expiryDate;
+		this(target,moderator,date,type,expiryDate,id);
 		this.reason = reason;
-		this.id = id;
 	}
 	
-	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate, int strikes, int id) {
-		this.targetUser = target;
-		this.moderatorUser = moderator;
-		this.date = date;
-		this.type = type;
-		this.expiryDate = expiryDate;
-		this.strikes = strikes;
-		this.id = id;
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate, int amount, int id) {
+		this(target,moderator,date,type,expiryDate,id);
+		this.amount = amount;
 	}
 	
-	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason, int strikes, int id) {
-		this.targetUser = target;
-		this.moderatorUser = moderator;
-		this.date = date;
-		this.type = type;
-		this.expiryDate = expiryDate;
-		this.reason = reason;
-		this.strikes = strikes;
-		this.id = id;
+	public Case(User target,User moderator,Instant date, CaseType type, Instant expiryDate,String reason, int amount, int id) {
+		this(target,moderator,date,type,expiryDate,reason,id);
+		this.amount = amount;
+		
 	}
 	
 	/**
@@ -128,7 +115,7 @@ public class Case {
 		out.put("expiryDate", this.expiryDate);
 		out.put("reason", this.reason);
 		out.put("id", this.id);
-		if(this.strikes == -1) out.put("strikes", this.strikes);
+		if(this.amount > 0) out.put("strikes", this.amount); // basically its still strikes in the db because legacy reasons
 		return out;
 	}
 	
@@ -160,7 +147,7 @@ public class Case {
 		switch(this.type) {
 			// punishments
 			case STRIKE:
-				action = "gave " + this.strikes + " strikes to";
+				action = "gave " + this.amount + " strikes to";
 				break;
 			case TEMPMUTE:
 				action = "temporarily muted";
@@ -177,10 +164,13 @@ public class Case {
 			case BAN:
 				action = "banned";
 				break;
+			case PURGE:
+				action = "purged" + this.amount + " messages from";
+				break;
 			
 			// removing punishments
 			case UNSTRIKE:
-				action = "removed " + this.strikes + " strikes from";
+				action = "removed " + this.amount + " strikes from";
 				break;
 			case UNMUTE:
 				action = "unmuted";

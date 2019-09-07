@@ -41,8 +41,12 @@ public class ModLogger {
 		Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(guild),guildoc);
 	}
 	
-	public static Case newCase(User target, User moderator, String reason, Instant expires, CaseType type, int strikes,Guild guild) {
+	public static Case newCase(User target, User moderator, String reason, Instant expires, CaseType type, Guild guild) {
 		Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(guild)).first();
-		return new Case(target,moderator,Instant.now(),type,expires,reason,strikes,guildoc.get("modlog",new ArrayList<>()).size());
+		return new Case(target,moderator,Instant.now(),type,expires,reason,0,guildoc.get("modlog",new ArrayList<>()).size());
+	}
+	public static Case newCase(User target, User moderator, String reason, Instant expires, CaseType type, int amount,Guild guild) {
+		Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(guild)).first();
+		return new Case(target,moderator,Instant.now(),type,expires,reason,amount,guildoc.get("modlog",new ArrayList<>()).size());
 	}
 }
