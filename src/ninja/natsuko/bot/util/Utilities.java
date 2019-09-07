@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
-import org.bson.Document;
-
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
@@ -198,9 +196,5 @@ public class Utilities {
 			target.kick("Natsuko auto-kick for exceeding strike threshold.").subscribe();
 			ModLogger.logCase(target.getGuild().block(), ModLogger.newCase(target, Main.client.getSelf().block(), "Natsuko auto-kick for exceeding strike threshold.", null, CaseType.KICK, 0, target.getGuild().block()));
 		}
-	}
-	
-	public static Document guildToFindDoc(Guild guild) {
-		return Document.parse("{\"id\":"+guild.getId().asString()+"}");
 	}
 }
