@@ -17,10 +17,10 @@ public class ArgumentParser {
 
 	public static List<String> toArgs(String string){
 		List<String> temp = new ArrayList<>();
-		Matcher baseMatcher = Pattern.compile("((?<=^|(?<=[^\\\\])(?:\\\\\\\\){0,1000})([\"']|`(?:``))(?:|[\\w\\W]*?(?<=[^\\\\])(?:\\\\\\\\)*)\\2|\\S+)").matcher(string);
+		Matcher baseMatcher = Pattern.compile("((?<=^|(?<=[^\\\\])(?:\\\\\\\\){0,1000})([\"']|`(?:``))(?:|.*?(?<=[^\\\\])(?:\\\\\\\\)*)\\2|\\S+)",Pattern.DOTALL | Pattern.MULTILINE).matcher(string);
 		while (baseMatcher.find()) {
 			String match = baseMatcher.group(1);
-			if(match.matches("^\".+\"$")) match = match.substring(1, match.length()-1);
+			if(match.matches("^([\"']|`(?:``)).+\"$")) match = match.substring(1, match.length()-1);
 			if(match.length() == 0) continue;
 		    temp.add(match);
 		}
