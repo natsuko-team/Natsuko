@@ -20,7 +20,7 @@ import ninja.natsuko.bot.util.Utilities;
 public class BanCommand extends Command {
 
 	public BanCommand() {
-		super("ban", "Ban a user from the server. Usage: n;ban <Mention, ID or query> [-A/--allResults|-s/--silent|-t/-temp=\\d[m|h|d|w]|-d/--deleteDays] [reason]");
+		super("ban", "Ban a user from the server. Usage: n;ban <Mention, ID or query> [-A/--allResults|-s/--silent|-t/--temp=\\d[m|h|d|w]|-d/--deleteDays] [reason]");
 	}
 
 	
