@@ -19,8 +19,8 @@ public class ArgumentParser {
 		List<String> temp = new ArrayList<>();
 		Matcher baseMatcher = Pattern.compile("(?<=^|(?<=^|[^\\\\])(?:\\\\\\\\)*)([\"']|`(?:``))(?:|(.*?)(?<=[^\\\\])(?:\\\\\\\\)*)\\1|(\\S+)",Pattern.DOTALL | Pattern.MULTILINE).matcher(string);
 		while (baseMatcher.find()) {
-			String quoted = baseMatcher.group(3);
-			String noquot = baseMatcher.group(4);
+			String quoted = baseMatcher.group(2);
+			String noquot = baseMatcher.group(3);
 			String match = quoted == null ? noquot : quoted;
 			//if(match.matches("^([\"']|`(?:``)).+\"$")) match = match.substring(1, match.length()-1);
 			if(match.length() == 0) continue;
