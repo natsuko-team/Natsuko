@@ -3,6 +3,10 @@ package ninja.natsuko.bot.commands;
 import java.lang.management.ManagementFactory;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.ByteArrayInputStream;
+import java.lang.Process;
 import ninja.natsuko.bot.util.Utilities;
 
 public class ExecCommand extends Command {
@@ -13,29 +17,29 @@ public class ExecCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-    if(!Utilities.userIsStaff(e.getMember().get())) {
+		if(!Utilities.userIsStaff(e.getMember().get())) {
 			Utilities.reply(e.getMessage(), "You arent staff. GTFO.");
 			return;
 		}
-    String message = e.getMessage().get("echo No input").toString();            
-    String out = "";
-    
-    Process p = Runtime.getRuntime().exec("example.bat");
+		String message = e.getMessage().getContent().orElse("echo No input").toString();            
+		String out = "";
 
-    BufferedReader in =
-        new BufferedReader(new InputStreamReader(p.getInputStream()));
-    String inputLine;
-    while ((inputLine = in.readLine()) != null) {
-        System.out.println(inputLine);
-        out += inputLine;
-    }
-    in.close();
-    if(out.length() > 1900){
-      Utilities.reply(e.getMessage, spec -> {
-        spec.addFile("output.txt",new ByteArrayInputStream(out.getBytes()));
-      });
-    }
-    Utilities.reply(e.getMessage(),out);
+		Process p = Runtime.getRuntime().exec("example.bat");
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String inputLine;
+		while ((inputLine = in.readLine()) != null) {
+			System.out.println(inputLine);
+			out += inputLine;
+		}
+		in.close();
+		if(out.length() > 1900){
+		      	Utilities.reply(e.getMessage, spec -> {
+				spec.addFile("output.txt",new ByteArrayInputStream(out.getBytes()));
+			});
+			return
+		}
+		Utilities.reply(e.getMessage(),out);
 		return;
 	}
 	
