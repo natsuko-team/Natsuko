@@ -32,7 +32,7 @@ public class ExecCommand extends Command {
     in.close();
     if(out.length() > 1900){
       Utilities.reply(e.getMessage, spec -> {
-        spec.addFile("output.txt",new ByteArrayInputStream(out.getBytes()))
+        spec.addFile("output.txt",new ByteArrayInputStream(out.getBytes()));
       });
     }
     Utilities.reply(e.getMessage(),out);
