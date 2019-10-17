@@ -49,6 +49,8 @@ import ninja.natsuko.bot.commands.Command;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.scriptengine.ScriptRunner;
+import ninja.natsuko.bot.util.ArgumentParser;
+import ninja.natsuko.bot.util.ErrorHandler;
 import ninja.natsuko.bot.util.Utilities;
 
 public class Main {
@@ -182,7 +184,7 @@ public class Main {
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
 		commandClasses.forEach((cmd) -> {
 			try {
-				Command cmdClass = cmd.newInstance();
+				Command cmdClass = cmd.newInstance(); //TODO find replacement ebcause its deprecated
 				commands.put(cmdClass.commandName, cmdClass);
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
@@ -358,7 +360,7 @@ public class Main {
 				return;
 			}
 			
-			String[] args = Arrays.stream(vomit).skip(1).toArray(String[]::new);
+			String[] args = ArgumentParser.toArgs(msg).stream().skip(1).toArray(String[]::new);
 
 			if (commands.get(cmd) != null) 
 				commands.get(cmd).execute(args, event);
@@ -370,30 +372,7 @@ public class Main {
 			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
 			return;
 		} catch(Exception e) {
-			String id = RandomStringUtils.randomAlphabetic(10); //TODO random strings as id's suck, use word ids instead. ex: artful staple plastic contingency . easier for people to remember and type
-			
-			logger.error(id,e);
-			
-			StringWriter string = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(string);
-			e.printStackTrace(printWriter);
-			
-			String trace = string.toString();
-			if (event.getMessage().getContent().isPresent()) {
-				if (event.getMessage().getContent().get().startsWith("n;")) {
-					event.getMessage().getChannel().block().createMessage(":warning: An error has occurred. We recommend you join the support server. Make sure to include this ID with your support request: `" + id +  "`.");
-				}
-			}
-			
-			TextChannel chan = (TextChannel) client.getChannelById(Snowflake.of(597818301183295596L)).block();
-			chan.createMessage(a->{
-				a.setContent("ID: `" + id + "`\n" +  
-					"Guild: " + event.getGuild().block().getName() + " [" + event.getGuild().block().getId().toString() + "]\n" +
-					"Message Content: " + (event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "N/A"));
-				a.addFile("natsuko-error_"+id+".txt",new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8)));
-			}).subscribe();
-			
-			
+			ErrorHandler.handle(e,event);
 			e.printStackTrace();
 		}
 	}
