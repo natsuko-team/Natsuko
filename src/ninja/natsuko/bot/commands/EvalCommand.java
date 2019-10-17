@@ -1,11 +1,12 @@
 package ninja.natsuko.bot.commands;
 
+import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import ninja.natsuko.bot.util.Utilities;
@@ -34,12 +35,15 @@ public class EvalCommand extends Command {
 				return;
 			}
 			Utilities.reply(e.getMessage(), "```[ "+output.getClass().getTypeName()+" ] "+output+"```");
-		} catch (ScriptException e1) {
+		} catch (Exception e1) {
 			StringWriter string = new StringWriter();
 			PrintWriter print = new PrintWriter(string);
 			e1.printStackTrace(print);
 			String trace = string.toString();
-			e.getMessage().getChannel().block().createMessage(":warning: An error has occurred!\n```"+trace+"```").subscribe();
+			Utilities.reply(e.getMessage(), spec ->{
+				spec.setContent(":warning: An error has occurred!\n```"+trace.substring(0,(int) Utilities.minmax(0,1000,trace.length()))+"```");
+				spec.addFile("eval-trace-"+Instant.now().toEpochMilli(), new ByteArrayInputStream(trace.getBytes()));
+			});
 			e1.printStackTrace();
 		}
 	}
