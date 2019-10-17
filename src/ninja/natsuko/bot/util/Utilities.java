@@ -197,4 +197,7 @@ public class Utilities {
 			ModLogger.logCase(target.getGuild().block(), ModLogger.newCase(target, Main.client.getSelf().block(), "Natsuko auto-kick for exceeding strike threshold.", null, CaseType.KICK, 0, target.getGuild().block()));
 		}
 	}
+	public static double minmax(double min, double max, double in) {
+		return Math.max(min, Math.min(in, max));
+	}
 }
