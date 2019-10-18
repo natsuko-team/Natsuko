@@ -54,7 +54,6 @@ public class EvalCommand extends Command {
 		    	spec.setContent("✅ Completed in "+( Instant.now().toEpochMilli() - began.toEpochMilli() ) + "ms"
 		    	+ "\n```[ "+output.getClass().getTypeName()+" ] " + finalout + " ```");
 			}).subscribe();
-			Utilities.reply(e.getMessage(), "```[ "+output.getClass().getTypeName()+" ] "+output+"```");
 		} catch (Exception e1) {
 			StringWriter string = new StringWriter();
 			PrintWriter print = new PrintWriter(string);
