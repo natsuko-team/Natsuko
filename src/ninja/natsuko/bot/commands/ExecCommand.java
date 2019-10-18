@@ -34,8 +34,7 @@ public class ExecCommand extends Command {
 			try(BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));){
 				String inputLine;
 				while ((inputLine = in.readLine()) != null) {
-					System.out.println(inputLine);
-					out += inputLine;
+					out += inputLine + "\n";
 				}
 			}
 		} catch (IOException e1) {
