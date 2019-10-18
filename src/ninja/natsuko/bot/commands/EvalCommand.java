@@ -40,7 +40,7 @@ public class EvalCommand extends Command {
 		} catch (Exception e1) {
 			StringWriter string = new StringWriter();
 			PrintWriter print = new PrintWriter(string);
-			e1.printStackTrace(print);
+			e1.printStackTrace(print);aaaaa
 			String trace = string.toString();
 			String usefultrace = String.join("\n",Arrays.asList(trace.split("\n")).stream().filter(a->{return !(a.contains("ninja.natsuko") || a.contains("in <eval> at line number"));}).collect(Collectors.toList()));
 			Utilities.reply(e.getMessage(), spec ->{
