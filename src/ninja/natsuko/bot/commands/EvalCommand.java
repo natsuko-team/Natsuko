@@ -11,6 +11,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
 import ninja.natsuko.bot.util.Utilities;
 
 @Invisible	
@@ -26,6 +27,8 @@ public class EvalCommand extends Command {
 			Utilities.reply(e.getMessage(), "You arent staff. GTFO.");
 			return;
 		}
+		Instant began = Instant.now();
+		Message processing = Utilities.getChannel(e).createMessage("<a:loading:393852367751086090> Working...\nBegan at "+began.toEpochMilli()).block();
 		ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 		engine.put("e", e);
 		engine.put("args", args);
@@ -36,6 +39,19 @@ public class EvalCommand extends Command {
 				Utilities.reply(e.getMessage(), "```[java.lang.Object] null```");
 				return;
 			}
+			Object finalout = output;
+			if(output.toString().length() > 1900){
+				processing.delete().subscribe();
+			    Utilities.reply(e.getMessage(), spec -> {
+			    	spec.setContent("✅ Completed in " + ( Instant.now().toEpochMilli() - began.toEpochMilli() ) + "ms") ;
+			    	spec.addFile("output.txt",new ByteArrayInputStream(finalout.toString().getBytes()));
+				});
+				return;
+			}
+			processing.edit(spec -> {
+		    	spec.setContent("✅ Completed in "+( Instant.now().toEpochMilli() - began.toEpochMilli() ) + "ms"
+		    	+ "\n```[ "+output.getClass().getTypeName()+" ] " + finalout + " ```");
+			}).subscribe();
 			Utilities.reply(e.getMessage(), "```[ "+output.getClass().getTypeName()+" ] "+output+"```");
 		} catch (Exception e1) {
 			StringWriter string = new StringWriter();

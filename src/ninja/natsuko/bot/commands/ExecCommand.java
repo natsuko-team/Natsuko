@@ -41,13 +41,12 @@ public class ExecCommand extends Command {
 		} catch (IOException e1) {
 			ErrorHandler.handle(e1,e);
 		}
-		ByteArrayInputStream outputbytestream = new ByteArrayInputStream(out.getBytes());
 		String finalout = out;
 		if(out.length() > 1900){
 			processing.delete().subscribe();
 		    Utilities.reply(e.getMessage(), spec -> {
 		    	spec.setContent("✅ Completed in " + ( Instant.now().toEpochMilli() - began.toEpochMilli() ) + "ms") ;
-		    	spec.addFile("output.txt",outputbytestream);
+		    	spec.addFile("output.txt",new ByteArrayInputStream(finalout.getBytes()));
 			});
 			return;
 		}
