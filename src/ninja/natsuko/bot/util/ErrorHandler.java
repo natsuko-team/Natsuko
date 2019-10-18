@@ -27,7 +27,7 @@ public class ErrorHandler {
 		String trace = string.toString();
 		if (event.getMessage().getContent().isPresent()) {
 			if (event.getMessage().getContent().get().startsWith("n;")) {
-				event.getMessage().getChannel().block().createMessage(":warning: An error has occurred. We recommend you join the support server. Make sure to include this ID with your support request: `" + id +  "`.");
+				event.getMessage().getChannel().block().createMessage(":warning: An error has occurred. We recommend you join the support server. Make sure to include this ID with your support request: `" + id +  "`.").subscribe();
 			}
 		}
 		
