@@ -46,13 +46,13 @@ public class ExecCommand extends Command {
 		if(out.length() > 1900){
 			processing.delete().subscribe();
 		    Utilities.reply(e.getMessage(), spec -> {
-		    	spec.setContent("✅ Completed in "+(Instant.now().toEpochMilli() - began.toEpochMilli()));
+		    	spec.setContent("✅ Completed in " + ( Instant.now().toEpochMilli() - began.toEpochMilli() ));
 		    	spec.addFile("output.txt",outputbytestream);
 			});
 			return;
 		}
 		processing.edit(spec -> {
-	    	spec.setContent("✅ Completed in "+Instant.now().compareTo(began)
+	    	spec.setContent("✅ Completed in "+( Instant.now().toEpochMilli() - began.toEpochMilli() )
 	    	+ "\n```" + finalout + "```");
 		}).subscribe();
 		return;
