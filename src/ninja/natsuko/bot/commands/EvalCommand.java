@@ -30,11 +30,13 @@ public class EvalCommand extends Command {
 		Instant began = Instant.now();
 		Message processing = Utilities.getChannel(e).createMessage("<a:loading:393852367751086090> Working...\nBegan at "+began.toEpochMilli()).block();
 		ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+		String message = e.getMessage().getContent().orElse("n;eval 'No input'").toString();   
+		String command = message.substring(7);
 		engine.put("e", e);
 		engine.put("args", args);
 		
 		try {
-			Object output = engine.eval(String.join(" ", args));
+			Object output = engine.eval(command);
 			if(output == null) {
 				Utilities.reply(e.getMessage(), "```[java.lang.Object] null```");
 				return;
