@@ -46,7 +46,7 @@ public class ExecCommand extends Command {
 		if(out.length() > 1900){
 			processing.delete().subscribe();
 		    Utilities.reply(e.getMessage(), spec -> {
-		    	spec.setContent("✅ Completed in "+began.compareTo(Instant.now()));
+		    	spec.setContent("✅ Completed in "+(Instant.now().toEpochMilli() - began.toEpochMilli()));
 		    	spec.addFile("output.txt",outputbytestream);
 			});
 			return;
