@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -40,8 +42,9 @@ public class EvalCommand extends Command {
 			PrintWriter print = new PrintWriter(string);
 			e1.printStackTrace(print);
 			String trace = string.toString();
+			String usefultrace = String.join("\n",Arrays.asList(trace.split("\n")).stream().filter(a->{return !(a.contains("ninja.natsuko") || a.contains("in <eval> at line number"));}).collect(Collectors.toList()));
 			Utilities.reply(e.getMessage(), spec ->{
-				spec.setContent(":warning: An error has occurred!\n```"+trace.substring(0,(int) Utilities.minmax(0,1000,trace.length()))+"```");
+				spec.setContent(":warning: An error has occurred!\n```"+usefultrace.substring(0,(int) Utilities.minmax(0,1000,usefultrace.length()))+"```");
 				spec.addFile("eval-trace-"+Instant.now().toEpochMilli(), new ByteArrayInputStream(trace.getBytes()));
 			});
 			e1.printStackTrace();
