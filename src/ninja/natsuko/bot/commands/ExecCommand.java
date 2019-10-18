@@ -52,7 +52,7 @@ public class ExecCommand extends Command {
 			return;
 		}
 		processing.edit(spec -> {
-	    	spec.setContent("✅ Completed in "+began.compareTo(Instant.now())
+	    	spec.setContent("✅ Completed in "+Instant.now().compareTo(began)
 	    	+ "\n```" + finalout + "```");
 		}).subscribe();
 		return;
