@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Instant;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
 import ninja.natsuko.bot.util.ErrorHandler;
 import ninja.natsuko.bot.util.Utilities;
 
+@Invisible
 public class ExecCommand extends Command {
 
 	public ExecCommand() {
@@ -24,7 +27,8 @@ public class ExecCommand extends Command {
 		String message = e.getMessage().getContent().orElse("n;exec echo No input").toString();   
 		String command = message.substring(7);
 		String out = "";
-
+		Instant began = Instant.now();
+		Message processing = Utilities.getChannel(e).createMessage("<a:loading:393852367751086090> Working...\nBegan at "+began.toEpochMilli()).block();
 		try {
 			Process p = Runtime.getRuntime().exec(command);	
 			try(BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));){
@@ -38,13 +42,19 @@ public class ExecCommand extends Command {
 			ErrorHandler.handle(e1,e);
 		}
 		ByteArrayInputStream outputbytestream = new ByteArrayInputStream(out.getBytes());
+		String finalout = out;
 		if(out.length() > 1900){
-		      	Utilities.reply(e.getMessage(), spec -> {
-				spec.addFile("output.txt",outputbytestream);
+			processing.delete().subscribe();
+		    Utilities.reply(e.getMessage(), spec -> {
+		    	spec.setContent("✅ Completed in "+began.compareTo(Instant.now()));
+		    	spec.addFile("output.txt",outputbytestream);
 			});
 			return;
 		}
-		Utilities.reply(e.getMessage(),out);
+		processing.edit(spec -> {
+	    	spec.setContent("✅ Completed in "+began.compareTo(Instant.now())
+	    	+ "\n```" + finalout + "```");
+		}).subscribe();
 		return;
 	}
 	
