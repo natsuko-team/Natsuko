@@ -2,6 +2,7 @@ package ninja.natsuko.bot.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 
@@ -20,7 +21,7 @@ public class ScriptCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsAdministrator(e.getMember().get())) return;
-		List<String> aargs = ArgumentParser.toArgs(String.join(" ", args));
+		List<String> aargs = ArgumentParser.toArgs(e.getMessage().getContent().get()).stream().skip(1).collect(Collectors.toList());
 		if(aargs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);
 			return;

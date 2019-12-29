@@ -1,22 +1,16 @@
 package ninja.natsuko.bot;
-import java.io.ByteArrayInputStream;	
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -289,14 +283,15 @@ public class Main {
 	private static void processCommand(MessageCreateEvent event) {
 		Logger logger = (Logger)LoggerFactory.getLogger("ninja.natsuko.bot.Main");
 		try {
-			if(!event.getMember().isPresent()) return;
+			if(!event.getMember().isPresent()) return; //what
 			
 			Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(event.getGuild().block())).first().get("options", new HashMap<>());
-			if(messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)>=3) {
+			messagesLastSecond.put(event.getMember().get().getId(), messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)+1);
+			if(messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)>=(Integer)opts.getOrDefault("automod.antispam.mpslimit",3)) {
 				if(opts.getOrDefault("automod.antispam","on").toString().equals("on")) {
 					event.getMessage().delete().subscribe();
 					exceededAntispamLimit.put(event.getMember().get().getId(),exceededAntispamLimit.getOrDefault(event.getMember().get().getId(),0)+1);
-					if(exceededAntispamLimit.get(event.getMember().get().getId())>3) {
+					if(exceededAntispamLimit.get(event.getMember().get().getId())>(Integer)opts.getOrDefault("automod.antispam.threshold",3)) {
 						Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(event.getGuild().block())).first();
 						List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
 						List<Document> temp = strikes.stream().filter(a->a.getLong("id") == event.getMember().get().getId().asLong()).collect(Collectors.toList());
@@ -318,7 +313,6 @@ public class Main {
 					return;
 				}
 			}
-			messagesLastSecond.put(event.getMember().get().getId(), messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)+1);
 			
 			String msg;
 			if (event.getMessage().getContent().isPresent()) {
@@ -327,7 +321,7 @@ public class Main {
 				return;
 			}
 			
-			/*if(opts.getOrDefault("automod.anticopypasta","on").toString().equals("on")) {
+			/*if(opts.getOrDefault("automod.anticopypasta","off").toString().equals("on")) {
 				if(event.getMessage().getContent().get().matches("")) {
 					
 				}
@@ -347,7 +341,10 @@ public class Main {
 			String cmd = vomit[0];
 			
 			if(cmd.equalsIgnoreCase("kill") && event.getMember().get().getId().asLong() == event.getClient().getSelfId().get().asLong()) {
-				if(!msg.contains(inst))System.exit(0);
+				if(!msg.contains(inst)) {
+					Utilities.reply(event.getMessage(), "Instance " + inst + "shutting down." );
+					System.exit(0);
+				}
 			}
 			
 			if(event.getMember().get().isBot()) return;
@@ -371,9 +368,12 @@ public class Main {
 			}
 			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
 			return;
+			
 		} catch(Exception e) {
+			
 			ErrorHandler.handle(e,event);
 			e.printStackTrace();
+			
 		}
 	}
 }

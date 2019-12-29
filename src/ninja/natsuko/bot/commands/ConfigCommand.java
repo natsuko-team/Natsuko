@@ -138,12 +138,33 @@ public class ConfigCommand extends Command {
 				return;
 			case "automod.antispam":
 				if(!aargs.get(2).matches("on|off")) {
-					Utilities.reply(e.getMessage(), "Invalid value! Expected: on/off got:"+aargs.get(2));
+					Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
+					return;
 				}
-				opts.put("strikes.banthreshold",aargs.get(2));
+				opts.put("automod.antispam",aargs.get(2));
 				guild.put("options", opts);
 				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
 				Utilities.reply(e.getMessage(), "Set antispam to "+aargs.get(2));
+				return;
+			case "automod.antispam.mpslimit":
+				if(!Utilities.isNumbers(aargs.get(2))) {
+					Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
+					return;
+				}
+				opts.put("automod.antispam.mpslimit",aargs.get(2));
+				guild.put("options", opts);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Utilities.reply(e.getMessage(), "Set antispam messages per second limit to "+aargs.get(2));
+				return;
+			case "automod.antispam.threshold":
+				if(!Utilities.isNumbers(aargs.get(2))) {
+					Utilities.reply(e.getMessage(), "Invalid value! Expected: number got:"+aargs.get(2));
+					return;
+				}
+				opts.put("automod.antispam.exceededLimit",aargs.get(2));
+				guild.put("options", opts);
+				Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(e.getGuild().block()),guild);
+				Utilities.reply(e.getMessage(), "Set antispam threshold to "+aargs.get(2));
 				return;
 			default:
 				Utilities.reply(e.getMessage(),"Invalid option!");
