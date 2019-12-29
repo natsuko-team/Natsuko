@@ -17,7 +17,7 @@ public class ArgumentParser {
 
 	public static List<String> toArgs(String string){
 		List<String> temp = new ArrayList<>();
-		Matcher baseMatcher = Pattern.compile("(?<=^|(?<=^|[^\\\\])(?:\\\\\\\\){0,1000})([\"']|`(?:``))(?:|(.*?)(?<=[^\\\\])(?:\\\\\\\\)*)\\1|(\\S+)",Pattern.DOTALL | Pattern.MULTILINE).matcher(string);
+		Matcher baseMatcher = Pattern.compile("(?<=^|(?<=^|[^\\\\])(?:\\\\\\\\){0,1000})([\"']|`(?:``)?)(?:|(.*?)(?<=[^\\\\])(?:\\\\\\\\)*)\\1|(\\S+)",Pattern.DOTALL | Pattern.MULTILINE).matcher(string);
 		while (baseMatcher.find()) {
 			String quoted = baseMatcher.group(2);
 			String noquot = baseMatcher.group(3);
