@@ -282,7 +282,7 @@ public class Main {
 
 	private static void processCommand(MessageCreateEvent event) {
 		Logger logger = (Logger)LoggerFactory.getLogger("ninja.natsuko.bot.Main");
-		if(event.getMember().get().isBot()) return;
+		if(event.getMessage().getUserData().isBot.get()) return;
 		try {
 			if(!event.getMember().isPresent()) return; //what
 			
