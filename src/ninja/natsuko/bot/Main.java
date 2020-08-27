@@ -282,6 +282,7 @@ public class Main {
 
 	private static void processCommand(MessageCreateEvent event) {
 		Logger logger = (Logger)LoggerFactory.getLogger("ninja.natsuko.bot.Main");
+		if(event.getMessage().getUserData().isBot.get()) return;
 		try {
 			if(!event.getMember().isPresent()) return; //what
 			
@@ -346,8 +347,6 @@ public class Main {
 					System.exit(0);
 				}
 			}
-			
-			if(event.getMember().get().isBot()) return;
 			
 			if (!msg.startsWith("n;")) {
 				if(!modengine.containsKey(event.getGuild().block().getId())) {
