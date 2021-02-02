@@ -65,7 +65,7 @@ public class Main {
 	private static final String timedString = "timed";
 	private static final String strikesString = "strikes";
 	private static final String natsukoPipeString = "Natsuko | ";
-	private static final String serversNPipeSemicolonHelpString = "servers | n;help";
+	private static final String serversNPipeSemicolonHelpString = " servers | n;help";
 	private static final String blockopenQuoteIdQuoteColonString = "{\"id\":";
 	private static final String cachetString = "Cachet";
 	
@@ -295,7 +295,7 @@ public class Main {
 
 	private static void processCommand(MessageCreateEvent event) {
 		//Logger logger = (Logger)LoggerFactory.getLogger("ninja.natsuko.bot.Main");
-		if(event.getMessage().getUserData().bot().get()) return;
+		if(event.getMessage().getUserData().bot().toOptional().orElse(false)) return;
 		
 		try {
 			if(!event.getMember().isPresent()) return; //what
