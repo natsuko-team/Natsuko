@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Permission;
+import discord4j.rest.util.Permission;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.ArgumentParser;
@@ -42,7 +42,7 @@ public class UnbanCommand extends Command {
 			if(Utilities.isNumbers(actualArgs.get(0).replaceAll("[<@!>]", ""))) {
 				User target = ArgumentParser.toUserByID(actualArgs.get(0).replaceAll("[<!@>]", ""));
 				if(target != null) {
-					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
+					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 						Utilities.reply(e.getMessage(), "I don't have permissions to unban!");	
 						return;
 					}
@@ -72,7 +72,7 @@ public class UnbanCommand extends Command {
 			}
 			StringBuilder output = new StringBuilder("");
 			for(User target : partialresult) {
-				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
+				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.MANAGE_ROLES))) {
 					output.append("I don't have permissions to Unban!");	
 					break;
 				}

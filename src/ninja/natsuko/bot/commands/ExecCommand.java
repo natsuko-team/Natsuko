@@ -24,7 +24,7 @@ public class ExecCommand extends Command {
 			Utilities.reply(e.getMessage(), "You arent staff. GTFO.");
 			return;
 		}
-		String message = e.getMessage().getContent().orElse("n;exec echo No input").toString();   
+		String message = e.getMessage().getContent();   
 		String command = message.substring(7);
 		String out = "";
 		Instant began = Instant.now();

@@ -21,7 +21,7 @@ public class ScriptCommand extends Command {
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
 		if(!Utilities.userIsAdministrator(e.getMember().get())) return;
-		List<String> aargs = ArgumentParser.toArgs(e.getMessage().getContent().get()).stream().skip(1).collect(Collectors.toList());
+		List<String> aargs = ArgumentParser.toArgs(e.getMessage().getContent()).stream().skip(1).collect(Collectors.toList());
 		System.out.println(aargs.toString());
 		if(aargs.size() == 0) {
 			Utilities.reply(e.getMessage(), this.description);

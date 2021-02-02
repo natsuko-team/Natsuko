@@ -10,7 +10,7 @@ import org.bson.Document;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.util.Permission;
+import discord4j.rest.util.Permission;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
@@ -86,11 +86,11 @@ public class BanCommand extends Command {
 						Utilities.reply(e.getMessage(), "That user is above you!");
 						return;
 					}
-					if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+					if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block()).block()) {
 						Utilities.reply(e.getMessage(), "That user is above the bot!");
 						return;
 					}
-					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
+					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 						Utilities.reply(e.getMessage(), "I don't have permissions to ban!");	
 						return;
 					}
@@ -131,11 +131,11 @@ public class BanCommand extends Command {
 					output.append("That user is above you!\n");
 					continue;
 				}
-				if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+				if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block()).block()) {
 					output.append("That user is above the bot!\n");
 					continue;
 				}
-				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
+				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 					output.append("I don't have permissions to ban!\n");	
 					break;
 				}

@@ -11,9 +11,9 @@ import delight.nashornsandbox.NashornSandbox;
 import delight.nashornsandbox.NashornSandboxes;
 import delight.nashornsandbox.exceptions.ScriptCPUAbuseException;
 import delight.nashornsandbox.exceptions.ScriptMemoryAbuseException;
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.util.Utilities;
 
@@ -44,10 +44,6 @@ public class ScriptRunner {
 	
 	public void run(Message message) {
 		if(this.scriptsErrored) return;
-		this.sandbox = NashornSandboxes.create();
-		this.sandbox.setMaxCPUTime(60000);
-		this.sandbox.setMaxMemory(30000000);
-		this.sandbox.setExecutor(this.executor);
 		this.sandbox.allow(Snowflake.class);
 		this.sandbox.inject("util", new SafeUtils());
 		this.sandbox.inject("message", new SafeMessage(message));
@@ -59,7 +55,7 @@ public class ScriptRunner {
 				this.scriptsErrored = true;
 				return;
 			} catch(ScriptMemoryAbuseException e) {
-				Utilities.reply(message, "ERROR: A script exceeded the Memory Limit of 3 Megabytes.\nPlease check your scripts for memory leaks.\nAll scripts have been disabled, You will not recieve a further message until a script is added, edited or deleted");
+				Utilities.reply(message, "ERROR: A script exceeded the Memory Limit of 30 Megabytes.\nPlease check your scripts for memory leaks.\nAll scripts have been disabled, You will not recieve a further message until a script is added, edited or deleted");
 				this.scriptsErrored = true;
 				return;
 			}

@@ -10,7 +10,7 @@ public class InviteCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		e.getMessage().getChannel().block().createMessage("Invite me with https://discordapp.com/oauth2/authorize?client_id="+e.getClient().getSelfId().get().asString()+"&scope=bot !").subscribe();
+		e.getMessage().getChannel().block().createMessage("Invite me with https://discordapp.com/oauth2/authorize?client_id="+e.getClient().getSelfId().asString()+"&scope=bot !").subscribe();
 		return;
 	}
 

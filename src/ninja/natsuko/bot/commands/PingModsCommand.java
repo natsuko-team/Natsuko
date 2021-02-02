@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.presence.Status;
-import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.util.Utilities;
 

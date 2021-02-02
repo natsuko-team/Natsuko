@@ -8,9 +8,9 @@ import org.bson.Document;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.util.Permission;
-import ninja.natsuko.bot.moderation.Case.CaseType;
+import discord4j.rest.util.Permission;
 import ninja.natsuko.bot.Main;
+import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;
@@ -50,15 +50,15 @@ public class StrikeCommand extends Command {
 						Utilities.reply(e.getMessage(), "That user is above you!");
 						return;
 					}
-					if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+					if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block()).block()) {
 						Utilities.reply(e.getMessage(), "That user is above the bot!");
 						return;
 					}
-					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
+					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
 						Utilities.reply(e.getMessage(),"I don't have permissions to kick!");	
 						return;
 					}
-					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
+					if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 						Utilities.reply(e.getMessage(),"I don't have permissions to ban!");	
 						return;
 					}
@@ -106,15 +106,15 @@ public class StrikeCommand extends Command {
 					output.append("That user is above you!\n");
 					continue;
 				}
-				if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+				if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block()).block()) {
 					output.append("That user is above the bot!\n");
 					continue;
 				}
-				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
+				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.KICK_MEMBERS))) {
 					output.append("I don't have permissions to kick!\n");	
 					break;
 				}
-				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
+				if(!(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block().getBasePermissions().block().contains(Permission.BAN_MEMBERS))) {
 					output.append("I don't have permissions to ban!\n");	
 					break;
 				}
@@ -128,8 +128,8 @@ public class StrikeCommand extends Command {
 				Document userStrikes;
 				if(temp.size() < 1) {
 					userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
-				} else
-				userStrikes = temp.get(0);
+				} else 
+					userStrikes = temp.get(0);
 				if(userStrikes == null) {
 					userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":1}");
 					strikes.add(userStrikes);
@@ -145,14 +145,12 @@ public class StrikeCommand extends Command {
 				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.STRIKE, 1, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Struck "+target.getUsername()+"\n");
-					continue;
 				}
 			}
 			Utilities.reply(e.getMessage(), output.toString());
 			return;
 		}
 		Utilities.reply(e.getMessage(), "You dont have permissions to kick!");
-		return;
 	}
 	
 }

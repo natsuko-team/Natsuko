@@ -13,7 +13,7 @@ public class PingCommand extends Command {
 
 	@Override
 	public void execute(String[] args, MessageCreateEvent e) {
-		long heartbeat = e.getClient().getResponseTime();
+		long heartbeat = e.getClient().getGatewayClient(e.getShardInfo().getIndex()).map((a)->a.getResponseTime().toMillis()).get();
 		Instant before = Instant.now();
 		Message msg = e.getMessage().getChannel().block().createMessage("Heartbeat: "+heartbeat+"ms").block();
 		long roundtrip = Instant.now().toEpochMilli()-before.toEpochMilli();

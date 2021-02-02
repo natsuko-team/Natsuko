@@ -1,6 +1,5 @@
 package ninja.natsuko.bot.util;
 
-import java.awt.Color;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,15 +12,16 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Permission;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageCreateSpec;
+import discord4j.rest.util.Color;
+import discord4j.rest.util.Permission;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.moderation.ModLogger;
@@ -32,7 +32,7 @@ public class Utilities {
         long seconds = time % 60;
         time /= 60;
         long minutes = time % 60;
-        time /= 60;
+        time /= 60;  
         long hours = time % 24;
         time /= 24;
         long days = time;
@@ -44,7 +44,7 @@ public class Utilities {
         return days+(days == 1 ? " Day, " : " Days, ")+strhours+":"+strminutes+":"+strseconds;
     }
 	
-	 public static Color embedColor = new Color(252, 113, 20);
+	 public static final Color embedColor = Color.of(252, 113, 20);
 	
 	
 	// message helpers \\

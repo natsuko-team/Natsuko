@@ -2,9 +2,9 @@ package ninja.natsuko.bot.scriptengine;
 
 import java.time.Instant;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.TextChannel;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.TextChannel;
 
 public class SafeMessage {
 
@@ -15,8 +15,8 @@ public class SafeMessage {
 	}
 	
 	public String getContent() {
-		if(this.message.getContent().isPresent()) {
-			return this.message.getContent().get();
+		if(this.message.getContent()!=null) {
+			return this.message.getContent();
 		}
 		return null;
 	}

@@ -6,11 +6,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import discord4j.core.object.entity.Channel;
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.Channel;
 import ninja.natsuko.bot.Main;
 
 public class ArgumentParser {

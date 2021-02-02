@@ -1,4 +1,4 @@
-package ninja.natsuko.bot.commands;
+	package ninja.natsuko.bot.commands;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.bson.Document;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.moderation.Case;
 import ninja.natsuko.bot.moderation.Case.CaseType;

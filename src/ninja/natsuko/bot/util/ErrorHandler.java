@@ -9,9 +9,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.TextChannel;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.TextChannel;
 import ninja.natsuko.bot.Main;
 
 public class ErrorHandler {
@@ -25,8 +25,8 @@ public class ErrorHandler {
 		e.printStackTrace(printWriter);
 		
 		String trace = string.toString();
-		if (event.getMessage().getContent().isPresent()) {
-			if (event.getMessage().getContent().get().startsWith("n;")) {
+		if (event.getMessage().getContent() != null) {
+			if (event.getMessage().getContent().startsWith("n;")) {
 				event.getMessage().getChannel().block().createMessage(":warning: An error has occurred. We recommend you join the support server. Make sure to include this ID with your support request: `" + id +  "`.").subscribe();
 			}
 		}
@@ -35,7 +35,7 @@ public class ErrorHandler {
 		chan.createMessage(a->{
 			a.setContent("ID: `" + id + "`\n" +  
 				"Guild: " + event.getGuild().block().getName() + " [" + event.getGuild().block().getId().toString() + "]\n" +
-				"Message Content: " + (event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "N/A"));
+				"Message Content: " + (event.getMessage().getContent() != null ? event.getMessage().getContent() : "N/A"));
 			a.addFile("natsuko-error_"+id+".txt",new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8)));
 		}).subscribe();
 		

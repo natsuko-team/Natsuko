@@ -8,12 +8,12 @@ import java.util.Map;
 
 import org.bson.Document;
 
-import discord4j.core.object.entity.Channel;
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.Channel;
+import discord4j.core.object.entity.channel.TextChannel;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.moderation.Case.CaseType;
 import ninja.natsuko.bot.util.Utilities;

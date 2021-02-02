@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.TextChannel;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.TextChannel;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.moderation.Case;
 import ninja.natsuko.bot.moderation.Case.CaseType;

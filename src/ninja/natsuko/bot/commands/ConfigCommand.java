@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.bson.Document;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.util.ArgumentParser;
 import ninja.natsuko.bot.util.Utilities;

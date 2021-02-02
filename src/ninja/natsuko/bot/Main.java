@@ -25,19 +25,22 @@ import com.mongodb.client.MongoDatabase;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import discord4j.core.object.util.Snowflake;
+import discord4j.rest.RestClient;
+import discord4j.rest.entity.RestGuild;
 import discord4j.rest.http.client.ClientException;
 import ninja.natsuko.bot.commands.Command;
 import ninja.natsuko.bot.moderation.Case.CaseType;
@@ -50,13 +53,22 @@ import ninja.natsuko.bot.util.Utilities;
 public class Main {
 	public static Map<String, Command> commands = new HashMap<>();
 	public static MongoDatabase db;
-	public static DiscordClient client;
+	public static GatewayDiscordClient client;
 	public static Map<Snowflake,ScriptRunner> modengine = new HashMap<>();
 	public static Thread timedEventThread;
 	public static Thread uniqueResetThread;
 	public static Thread messageResetThread;
 	public static Thread resetAntispam;
 
+	private static final String guildString = "guild";
+	private static final String guildsString = "guilds";
+	private static final String timedString = "timed";
+	private static final String strikesString = "strikes";
+	private static final String natsukoPipeString = "Natsuko | ";
+	private static final String serversNPipeSemicolonHelpString = "servers | n;help";
+	private static final String blockopenQuoteIdQuoteColonString = "{\"id\":";
+	private static final String cachetString = "Cachet";
+	
 	
 	static String inst = "null";
 	static Map<Snowflake,Map<Snowflake,Integer>> uniqueServersJoined = new HashMap<>();
@@ -73,7 +85,8 @@ public class Main {
 					try {
 						Thread.sleep(86400000);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Thread.currentThread().interrupt();
+						root.error("Uniques Reset Interrupted", e);
 					}
 					uniqueServersJoined.clear();
 				}
@@ -87,7 +100,8 @@ public class Main {
 					try {
 						Thread.sleep(2500);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Thread.currentThread().interrupt();
+						root.error("MLS Reset Interrupted", e);
 					}
 					messagesLastSecond.clear();
 				}
@@ -101,7 +115,8 @@ public class Main {
 					try {
 						Thread.sleep(60000);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Thread.currentThread().interrupt();
+						root.error("Antispam Exceeded Reset Interrupted", e);
 					}
 					exceededAntispamLimit.clear();
 				}
@@ -116,56 +131,58 @@ public class Main {
 					try {
 						Thread.sleep(30000);
 					} catch (InterruptedException e) {
-						//dont care because interrupt means process timed e's immediately
+						Thread.currentThread().interrupt();
+						root.error("Timed Events Interrupted", e);
 					}
-					if(!client.isConnected()) continue; //client isnt ready yet dont jump the shit
-					for(Document i : db.getCollection("timed").find(Document.parse("{\"due\":{\"$lte\":"+Instant.now().toEpochMilli()+"}}"))) {
-						Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(client.getGuildById(Snowflake.of(i.getLong("guild"))).block())).first().get("options", new HashMap<>());
+					for(Document i : db.getCollection(timedString).find(Document.parse("{\"due\":{\"$lte\":"+Instant.now().toEpochMilli()+"}}"))) {
+						RestClient restclient = client.getRestClient();
+						Map<String,Object> opts = Main.db.getCollection(guildsString).find(Utilities.guildToFindDoc(client.getGuildById(Snowflake.of(i.getLong(guildString))).block())).first().get("options", new HashMap<>());
 						try {
 							switch(i.getString("type")) {
 							case "unban":
-								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().unban(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms").subscribe();
-								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNBAN, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
-								db.getCollection("timed").deleteOne(i);
+								restclient.getGuildById(Snowflake.of(i.getLong(guildString))).removeGuildBan(Snowflake.of(i.getString("target")), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms").subscribe();
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong(guildString))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unban after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNBAN, 0, client.getGuildById(Snowflake.of(i.getLong(guildString))).block()));
+								db.getCollection(timedString).deleteOne(i);
 								break;
 							case "unmute":
 								long roleId = 0l;
 								if(!opts.containsKey("mutedrole")) {root.info("Mutedrole didnt exist upon auto-unmute"); return;} //wtf?
 								roleId = Long.parseLong(opts.get("mutedrole").toString());
-								client.getGuildById(Snowflake.of(i.getLong("guild"))).block().getMemberById(Snowflake.of(i.getString("target"))).block().removeRole(
+								restclient.getGuildById(Snowflake.of(i.getLong(guildString))).removeMemberRole(Snowflake.of(i.getString("target")),
 										Snowflake.of(roleId), "Natsuko auto-unmute after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms").subscribe();
-								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unmute after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNMUTE, 0, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
-								db.getCollection("timed").deleteOne(i);
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong(guildString))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unmute after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNMUTE, 0, client.getGuildById(Snowflake.of(i.getLong(guildString))).block()));
+								db.getCollection(timedString).deleteOne(i);
 								root.info("Unmuted a user", i);
 								break;
 							case "unstrike":
-								Guild guild = client.getGuildById(Snowflake.of(i.getLong("guild"))).block();
-								Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(guild)).first();
-								List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
+								Guild guild = client.getGuildById(Snowflake.of(i.getLong(guildString))).block();
+								Document guildoc = Main.db.getCollection(guildsString).find(Utilities.guildToFindDoc(guild)).first();
+								List<Document> strikes = guildoc.get(strikesString, new ArrayList<>());
 								List<Document> temp = strikes.stream().filter(a->a.getLong("id") == Snowflake.of(i.getString("target")).asLong()).collect(Collectors.toList());
 								Document userStrikes;
 								if(temp.size() < 1) {
-									userStrikes = Document.parse("{\"id\":"+i.getString("target")+",\"strikes\":0}");
-								} else
-								userStrikes = temp.get(0);
+									userStrikes = Document.parse(blockopenQuoteIdQuoteColonString+i.getString("target")+",\"strikes\":0}");
+								} 
+								else
+									userStrikes = temp.get(0);
 								if(userStrikes == null) {
-									userStrikes = Document.parse("{\"id\":"+i.getString("target")+",\"strikes\":0}");
+									userStrikes = Document.parse(blockopenQuoteIdQuoteColonString+i.getString("target")+",\"strikes\":0}");
 									strikes.add(userStrikes);
 								}
 								else {
 									int j = strikes.indexOf(userStrikes);
-									userStrikes.put("strikes", userStrikes.getInteger("strikes")-1);
+									userStrikes.put(strikesString, userStrikes.getInteger(strikesString)-1);
 									strikes.set(j, userStrikes);
 								}
-								guildoc.put("strikes", strikes);
-								Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(guild), guildoc);
-								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong("guild"))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unstrike after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNSTRIKE, 1, client.getGuildById(Snowflake.of(i.getLong("guild"))).block()));
+								guildoc.put(strikesString, strikes);
+								Main.db.getCollection(guildsString).replaceOne(Utilities.guildToFindDoc(guild), guildoc);
+								ModLogger.logCase(client.getGuildById(Snowflake.of(i.getLong(guildString))).block(), ModLogger.newCase(client.getUserById(Snowflake.of(i.getString("target"))).block(), client.getSelf().block(), "Natsuko auto-unstrike after "+Instant.now().minusMillis(i.getLong("due")).toEpochMilli()+"ms", null, CaseType.UNSTRIKE, 1, client.getGuildById(Snowflake.of(i.getLong(guildString))).block()));
 								break;
 							default:
 								break;
 							}
 						} catch(Exception e) {
-							db.getCollection("timed").deleteOne(i); //it failed to remove it so it doesnt fuck up more things
+							db.getCollection(timedString).deleteOne(i); //it failed to remove it so it doesnt fuck up more things
 							root.error("error in timedthread",e);
 						}
 					}
@@ -178,7 +195,7 @@ public class Main {
 		Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
 		commandClasses.forEach((cmd) -> {
 			try {
-				Command cmdClass = cmd.newInstance(); //TODO find replacement ebcause its deprecated
+				Command cmdClass = cmd.newInstance(); 
 				commands.put(cmdClass.commandName, cmdClass);
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
@@ -191,26 +208,25 @@ public class Main {
 			
 			db = MongoClients.create(config.get("Mongo", "uri")).getDatabase(config.get("Mongo", "database"));
 			
-			DiscordClientBuilder builder = new DiscordClientBuilder(config.get("Config", "token"));
-			client = builder.build();	
+			client = DiscordClientBuilder.create(config.get("Config", "token")).build().login().block();
 			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> {
 				((MessageChannel)event.getClient().getChannelById(Snowflake.of(592781286297305091l)).block()).createMessage("n;kill "+inst).subscribe();
-				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getGuilds().size()+" servers | n;help"))).block();
+				event.getClient().updatePresence(Presence.online(Activity.playing(natsukoPipeString+event.getGuilds().size()+serversNPipeSemicolonHelpString))).block();
 				return;
 			});	
 			client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(event->{
-				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getClient().getGuilds().count().block()+" servers | n;help"))).block();
-				if(event.getGuild().getJoinTime().get().isAfter(Instant.now().minusMillis(1000l))) {
+				event.getClient().updatePresence(Presence.online(Activity.playing(natsukoPipeString+event.getClient().getGuilds().count().block()+serversNPipeSemicolonHelpString))).block();
+				if(event.getGuild().getJoinTime().isAfter(Instant.now().minusMillis(1000l))) {
 					
-					Main.db.getCollection("guilds").insertOne(Utilities.initGuild(event.getGuild()));
+					Main.db.getCollection(guildsString).insertOne(Utilities.initGuild(event.getGuild()));
 					//TODO fuck botfarms
 				}
 			});
 			client.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(event->{
-				event.getClient().updatePresence(Presence.online(Activity.playing("Natsuko | "+event.getClient().getGuilds().count().block()+" servers | n;help"))).block();
+				event.getClient().updatePresence(Presence.online(Activity.playing(natsukoPipeString+event.getClient().getGuilds().count().block()+serversNPipeSemicolonHelpString))).block();
 			});
 			client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(event->{
-				if(event.getMember().getUsername().matches("(discord.gg|twitter.com|discordapp.com|dis.gd)")) {
+				if(event.getMember().getUsername().matches("(discord.gg|twitter.com|discordapp.com|dis.gd|discord.com)")) {
 					try {
 					event.getMember().ban(a->{a.setReason("Natsuko autoban for: BadURL in username");a.setDeleteMessageDays(1);}).block();
 					} catch (ClientException e) {return;/*probs missing perms*/}
@@ -228,18 +244,17 @@ public class Main {
 				}
 			});
 			client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Main::processCommand);
-			
 			new Thread(() -> {
 				URL url;
 				try {
-					url = new URL(config.get("Cachet", "url"));
+					url = new URL(config.get(cachetString, "url"));
 				} catch (MalformedURLException e) {
 					root.error("Status URL malformed. Not bothering to run status thread.");
 					return;
 				}
 				
-				String metricId = config.get("Cachet", "metric");
-				String apiKey = config.get("Cachet", "key");
+				String metricId = config.get(cachetString, "metric");
+				String apiKey = config.get(cachetString, "key");
 				
 				String metricsUrl;
 				try {
@@ -254,7 +269,7 @@ public class Main {
 					try {
 						Thread.sleep(15000);
 
-						String data = "{\"value\":" + client.getResponseTime() + "}";
+						String data = "{\"value\":" + client.getGatewayClient(0).map((a)->a.getResponseTime().toMillis()).get() + "}";
 						
 						try (CloseableHttpClient client1 = HttpClients.createDefault()) {
 							HttpPost post = new HttpPost(metricsUrl);
@@ -273,42 +288,41 @@ public class Main {
 					}
 				}
 			}, "Status Metric Thread").start();
-			
-			client.login().block();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private static void processCommand(MessageCreateEvent event) {
-		Logger logger = (Logger)LoggerFactory.getLogger("ninja.natsuko.bot.Main");
-		if(event.getMessage().getUserData().isBot.get()) return;
+		//Logger logger = (Logger)LoggerFactory.getLogger("ninja.natsuko.bot.Main");
+		if(event.getMessage().getUserData().bot().get()) return;
+		
 		try {
 			if(!event.getMember().isPresent()) return; //what
 			
-			Map<String,Object> opts = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(event.getGuild().block())).first().get("options", new HashMap<>());
+			Map<String,Object> opts = Main.db.getCollection(guildsString).find(Utilities.guildToFindDoc(event.getGuild().block())).first().get("options", new HashMap<>());
 			messagesLastSecond.put(event.getMember().get().getId(), messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)+1);
 			if(messagesLastSecond.getOrDefault(event.getMember().get().getId(),0)>=(Integer)opts.getOrDefault("automod.antispam.mpslimit",3)) {
 				if(opts.getOrDefault("automod.antispam","on").toString().equals("on")) {
 					event.getMessage().delete().subscribe();
 					exceededAntispamLimit.put(event.getMember().get().getId(),exceededAntispamLimit.getOrDefault(event.getMember().get().getId(),0)+1);
 					if(exceededAntispamLimit.get(event.getMember().get().getId())>(Integer)opts.getOrDefault("automod.antispam.threshold",3)) {
-						Document guildoc = Main.db.getCollection("guilds").find(Utilities.guildToFindDoc(event.getGuild().block())).first();
-						List<Document> strikes = guildoc.get("strikes", new ArrayList<>());
+						Document guildoc = Main.db.getCollection(guildsString).find(Utilities.guildToFindDoc(event.getGuild().block())).first();
+						List<Document> strikes = guildoc.get(strikesString, new ArrayList<>());
 						List<Document> temp = strikes.stream().filter(a->a.getLong("id") == event.getMember().get().getId().asLong()).collect(Collectors.toList());
 						Document userStrikes;
 						if(temp.size() < 1) {
-							userStrikes = Document.parse("{\"id\":"+event.getMember().get().getId().asLong()+",\"strikes\":1}");
+							userStrikes = Document.parse(blockopenQuoteIdQuoteColonString+event.getMember().get().getId().asLong()+",\"strikes\":1}");
 							strikes.add(userStrikes);
 						} else {
 							userStrikes = temp.get(0);
 							int i = strikes.indexOf(userStrikes);
-							userStrikes.put("strikes", userStrikes.getInteger("strikes")+1);
+							userStrikes.put(strikesString, userStrikes.getInteger(strikesString)+1);
 							strikes.set(i, userStrikes);
 						}
-						guildoc.put("strikes", strikes);
-						Main.db.getCollection("guilds").replaceOne(Utilities.guildToFindDoc(event.getGuild().block()), guildoc);
-						Utilities.processStrike(event.getMember().get(),userStrikes.getInteger("strikes"));
+						guildoc.put(strikesString, strikes);
+						Main.db.getCollection(guildsString).replaceOne(Utilities.guildToFindDoc(event.getGuild().block()), guildoc);
+						Utilities.processStrike(event.getMember().get(),userStrikes.getInteger(strikesString));
 						ModLogger.logCase(event.getGuild().block(), ModLogger.newCase(event.getMember().get(), event.getMember().get(), "Natsuko auto-strike for antispam", null, CaseType.STRIKE, 1, event.getGuild().block()));
 					}
 					return;
@@ -316,8 +330,8 @@ public class Main {
 			}
 			
 			String msg;
-			if (event.getMessage().getContent().isPresent()) {
-				msg = event.getMessage().getContent().get();
+			if (event.getMessage().getContent() != null) {
+				msg = event.getMessage().getContent();
 			} else {
 				return;
 			}
@@ -341,7 +355,7 @@ public class Main {
 			
 			String cmd = vomit[0];
 			
-			if(cmd.equalsIgnoreCase("kill") && event.getMember().get().getId().asLong() == event.getClient().getSelfId().get().asLong()) {
+			if(cmd.equalsIgnoreCase("kill") && event.getMember().get().getId().asLong() == event.getClient().getSelfId().asLong()) {
 				if(!msg.contains(inst)) {
 					Utilities.reply(event.getMessage(), "Instance " + inst + "shutting down." );
 					System.exit(0);
@@ -358,20 +372,20 @@ public class Main {
 			
 			String[] args = ArgumentParser.toArgs(msg).stream().skip(1).toArray(String[]::new);
 
-			if (commands.get(cmd) != null) 
+			if (commands.get(cmd) != null) {
 				commands.get(cmd).execute(args, event);
+				return; // stop execution from continuing so that you dont have hard commands conflicting with modengine
+			}
 			
 			//command execution takes execution precedence over modengine
 			if(!modengine.containsKey(event.getGuild().block().getId())) {
 				modengine.put(event.getGuild().block().getId(),new ScriptRunner(event.getGuild().block()));
 			}
 			modengine.get(event.getGuild().block().getId()).run(event.getMessage());
-			return;
 			
 		} catch(Exception e) {
 			
 			ErrorHandler.handle(e,event);
-			e.printStackTrace();
 			
 		}
 	}

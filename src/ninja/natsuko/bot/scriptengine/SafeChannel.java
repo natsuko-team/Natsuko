@@ -1,8 +1,8 @@
 package ninja.natsuko.bot.scriptengine;
 
 
-import discord4j.core.object.entity.TextChannel;
-import discord4j.core.object.util.Snowflake;
+import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.channel.TextChannel;
 import ninja.natsuko.bot.util.Utilities;
 
 public class SafeChannel {

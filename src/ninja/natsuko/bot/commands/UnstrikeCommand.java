@@ -49,7 +49,7 @@ public class UnstrikeCommand extends Command {
 						Utilities.reply(e.getMessage(), "That user is above you!");
 						return;
 					}
-					if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+					if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block()).block()) {
 						Utilities.reply(e.getMessage(), "That user is above the bot!");
 						return;
 					}
@@ -64,7 +64,7 @@ public class UnstrikeCommand extends Command {
 					if(temp.size() < 1) {
 						userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
 					} else
-					userStrikes = temp.get(0);
+						userStrikes = temp.get(0);
 					if(userStrikes == null) {
 						userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":0}");
 						strikes.add(userStrikes);
@@ -99,8 +99,7 @@ public class UnstrikeCommand extends Command {
 				if(target.isHigher(e.getMember().get()).block()) {
 					output.append("That user is above you!\n");
 					continue;
-				}
-				if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId().get()).block()).block()) {
+				} else if(target.isHigher(e.getGuild().block().getMemberById(e.getClient().getSelfId()).block()).block()) {
 					output.append("That user is above the bot!\n");
 					continue;
 				}
@@ -114,8 +113,9 @@ public class UnstrikeCommand extends Command {
 				Document userStrikes;
 				if(temp.size() < 1) {
 					userStrikes = Document.parse("{\"id\":"+target.getId().asString()+",\"strikes\":0}");
-				} else
-				userStrikes = temp.get(0);
+				} 
+				else
+					userStrikes = temp.get(0);
 				if(userStrikes == null) {
 					userStrikes = Document.parse("{\"id\":"+target.getId().asLong()+",\"strikes\":0}");
 					strikes.add(userStrikes);
@@ -130,14 +130,12 @@ public class UnstrikeCommand extends Command {
 				ModLogger.logCase(e.getGuild().block(), ModLogger.newCase(target, e.getMember().get(), reason, null, CaseType.UNSTRIKE, 1, e.getGuild().block()));
 				if(!silent) {
 					output.append(e.getMember().get().getMention() + " Unstruck "+target.getUsername()+"\n");
-					continue;
 				}
 			}
 			Utilities.reply(e.getMessage(), output.toString());
 			return;
 		}
 		Utilities.reply(e.getMessage(), "You dont have permissions to kick!");
-		return;
 	}
 	
 }

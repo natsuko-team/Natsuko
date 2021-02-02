@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.util.Snowflake;
 import ninja.natsuko.bot.Main;
 import ninja.natsuko.bot.exceptions.NotConfiguredException;
-import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.moderation.Case.CaseType;
+import ninja.natsuko.bot.moderation.ModLogger;
 import ninja.natsuko.bot.util.Utilities;
 
 public class SafeMember {
