@@ -284,7 +284,6 @@ public class Main {
 						}
 					} catch (InterruptedException | IOException e) {
 						root.error(e.getMessage());
-						break;
 					}
 				}
 			}, "Status Metric Thread").start();
