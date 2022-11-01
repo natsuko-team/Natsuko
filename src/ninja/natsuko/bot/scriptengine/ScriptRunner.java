@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.script.ScriptException;
+import javax.script.ScriptContext;
+import javax.script.SimpleScriptContext;
 
 import delight.nashornsandbox.NashornSandbox;
 import delight.nashornsandbox.NashornSandboxes;
@@ -33,6 +35,8 @@ public class ScriptRunner {
 		this.guild = guild;
 		this.sandbox.setMaxCPUTime(60000);
 		this.sandbox.setMaxMemory(30000000);
+		this.sandbox.allow(Snowflake.class);
+		this.sandbox.inject("util", new SafeUtils());
 		this.sandbox.setExecutor(this.executor);
 		reload();
 	}
@@ -44,12 +48,11 @@ public class ScriptRunner {
 	
 	public void run(Message message) {
 		if(this.scriptsErrored) return;
-		this.sandbox.allow(Snowflake.class);
-		this.sandbox.inject("util", new SafeUtils());
-		this.sandbox.inject("message", new SafeMessage(message));
+		ScriptContext ctx = new SimpleScriptContext();
+                ctx.setAttribute("message", new SafeMessage(message), ScriptContext.ENGINE_SCOPE);
 		for(String i : this.loadedScripts) {
 			try {
-				this.sandbox.eval("\n"+i);
+				this.sandbox.eval("\n"+i, ctx);
 			} catch (ScriptCPUAbuseException e) {
 				Utilities.reply(message, "ERROR: A script exceeded the CPU Time limit.\nPlease check your scripts for infinite loops, or make them shorter.\nAll scripts have been disabled, You will not recieve a further message until a script is added, edited or deleted");
 				this.scriptsErrored = true;
